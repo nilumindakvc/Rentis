@@ -1,0 +1,121 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "leaflet/dist/leaflet.css";
+@import "react-day-picker/style.css";
+
+:root {
+  --rentis-accent: #6b3f69;
+  --rentis-accent-dark: #522f51;
+  --rentis-free: #3e7a5c;
+  --rentis-paid: #33587e;
+
+  --bs-primary: var(--rentis-accent);
+  --bs-primary-rgb: 107, 63, 105;
+  --bs-link-color: var(--rentis-accent);
+  --bs-link-hover-color: var(--rentis-accent-dark);
+}
+
+body {
+  background-color: #f7f6f5;
+}
+
+.btn-primary {
+  background-color: var(--rentis-accent);
+  border-color: var(--rentis-accent);
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--rentis-accent-dark) !important;
+  border-color: var(--rentis-accent-dark) !important;
+}
+.btn-outline-primary {
+  color: var(--rentis-accent);
+  border-color: var(--rentis-accent);
+}
+.btn-outline-primary:hover {
+  background-color: var(--rentis-accent);
+  border-color: var(--rentis-accent);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badge-free {
+  background-color: #e2efe7;
+  color: var(--rentis-free);
+}
+.badge-paid {
+  background-color: #e1e9f1;
+  color: var(--rentis-paid);
+}
+
+.property-card {
+  height: 100%;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.property-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+.property-card img {
+  object-fit: cover;
+  height: 170px;
+}
+
+.leaflet-map {
+  width: 100%;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.nav-link.active {
+  font-weight: 600;
+}
+
+.chat-bubble {
+  max-width: 75%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.9rem;
+}
+.chat-bubble-mine {
+  background-color: var(--rentis-accent);
+  color: #fff;
+  border-bottom-right-radius: 0.2rem;
+}
+.chat-bubble-theirs {
+  background-color: #eee;
+  color: #212529;
+  border-bottom-left-radius: 0.2rem;
+}
+.chat-bubble-time {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin-top: 0.15rem;
+  text-align: right;
+}
+
+.section-tinted {
+  background-color: #f7f2f6;
+  border: 1px solid #ece1ea;
+}
+
+.rdp-root {
+  --rdp-accent-color: var(--rentis-accent);
+  --rdp-accent-background-color: #f0e5ef;
+  --rdp-disabled-opacity: 1;
+}
+.rdp-disabled:not(.rdp-selected) {
+  background-color: #fbe3e2;
+  color: #b13a34;
+  border-radius: 6px;
+}
+
+@media (max-width: 480px) {
+  .container,
+  .container-fluid {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

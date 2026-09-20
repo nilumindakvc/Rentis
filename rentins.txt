@@ -1,0 +1,153 @@
+property types
+
+🏥 Healthcare
+
+Clinic  - Doctors
+Medical center  - Healthcare businesses
+Dental - clinic space Dentists
+Pharmacy space - Pharmacy operators
+
+🎓 Education
+
+
+Classroom -Tutors/training providers
+ 
+🏨 Hospitality
+Hotel - Hotel operator
+
+🚗 Vehicle
+Parking space - Vehicle owners/businesses
+Vehicle yard -  Car dealers
+
+🏭 Industrial
+Warehouse - Logistics/retail companies
+Factory - Manufacturing companies
+
+🍽️ Food
+Restaurant space - Restaurants
+Café space -Cafés
+
+🏪 Retail
+Shop -  Retail businesses
+Showroom - Vehicle/furniture/electronics businesses
+
+🏢 Office
+Office building - Companies
+Individual office -Small businesses
+Meeting/conference room -Companies
+
+🏠 Living
+
+house - family
+aperment/flat - individual families
+vila - families /tourist
+Room - Students, workers
+Boarding house - Students/workers
+Guest house - Travelers
+
+🎉 Events
+Event hall      -      Event organizers
+Wedding hall  -  Wedding/event customers
+Conference hall  - Companies/organizations
+Party/function space -  Individuals/organizations
+
+
+catogorize places based on customer time period requiremnts
+
+
+Long-term rental
+ -years of rental
+
+Medium-term rental
+- months of rental
+
+Short-term rental
+ - day of rental
+   
+
+owner side features 
+
+Feature                                                                  Free / Chargeable          Possible charging model
+
+Create owner account                                 🟢 Free                                 —
+Create property listing                                🟢 Free                                 —
+Add photos/videos                                         🟢 Free                                 —
+Receive customer inquiries                       🟢 Free                                 —
+View basic listing statistics                        🟢 Free                                 —
+Manage bookings                                             🟢 Free                                 —
+Customer reviews/ratings                          🟢 Free                                 —
+
+Booking transaction                                       🔵 Chargeable                  % commission
+Featured listing                                                 🔵 Chargeable                  Per day/week
+Higher search ranking                                   🔵 Chargeable                  Subscription/boost
+Advertisement/promoted property      🔵 Chargeable                  Campaign fee
+Virtual tour / 360° tour                                 🔵 Chargeable                 Per property
+Property management service                 🔵 Chargeable                 Monthly/% of rent
+longer advertisement durations              🔵 Chargeable                 Monthly/% of rent
+Advanced analytics                                         🔵 Chargeable                 Monthly subscription
+Automated customer communication 🔵 Chargeable                Subscription
+Financial/accounting reports                     🔵 Chargeable               Subscription
+Verification badge                                            🔵 Chargeable                Verification fee/subscription
+
+
+2. Customer-side features
+
+
+Create account                                                 🟢 Free —
+Search properties                                           🟢 Free —
+Filter by location                                             🟢 Free —
+Filter by price                                                   🟢 Free —
+Filter by property type                               🟢 Free —
+View photos/videos                                     🟢 Free —
+View property details                                 🟢 Free —
+Save/favorite properties                           🟢 Free —
+Compare properties                                    🟢 Free —
+Contact owner                                                🟢 Free —
+Reviews and ratings                                     🟢 Free —
+Map/location viewing                                 🟢 Free —
+Booking request                                            🟢 Free —
+
+
+3. Platform-level features
+There are also features that don't necessarily belong to either the owner or customer.
+
+🟢 Free/core platform features
+User registration/login
+Property search engine
+Property listing system
+Search filters
+Location/map integration
+Messaging
+Booking management
+Reviews and ratings
+Notifications
+Basic customer support - chat bot 
+Owner dashboard
+Customer dashboard
+Basic reporting
+Property availability calendar
+
+
+Your advertisement could therefore have this structure
+
+PROPERTY
+├── Photos / Videos
+├── Property Type
+├── Location
+├── Size & Layout
+├── Facilities
+├── Condition & Furnishing
+├── Capacity
+│
+RENTAL
+├── Minimum Price
+├── Security Deposit
+├── Rental Duration
+├── Renewal Terms
+├── Availability
+└── Additional Charges
+│
+RULES
+├── Permitted Usage
+├── Restrictions
+└── Parking / Access
