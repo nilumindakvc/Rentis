@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     stripe_publishable_key: str = ""
     stripe_webhook_secret: str = ""
     stripe_platform_country: str = "US"
-    frontend_base_url: str = "http://localhost:5173"
+    frontend_base_url: str = "https://rentis.onrender.com"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
