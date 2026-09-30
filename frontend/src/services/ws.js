@@ -1,11 +1,19 @@
 import { getAccessToken } from './authStorage'
 
-const WS_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/^http/, 'ws')
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const RECONNECT_DELAY_MS = 3000
 
 let socket = null
 let reconnectTimer = null
 const listeners = new Set()
+
+function getWebSocketBase() {
+  if (API_BASE.startsWith('/')) {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    return `${protocol}//${window.location.host}${API_BASE.replace(/\/+$/, '')}`
+  }
+  return API_BASE.replace(/^http/, 'ws').replace(/\/+$/, '')
+}
 
 function notify(event) {
   listeners.forEach((cb) => cb(event))
@@ -16,7 +24,7 @@ export function connectSocket() {
   if (!token) return
   if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) return
 
-  socket = new WebSocket(`${WS_BASE}/ws/messages?token=${encodeURIComponent(token)}`)
+  socket = new WebSocket(`${getWebSocketBase()}/ws/messages?token=${encodeURIComponent(token)}`)
 
   socket.onmessage = (event) => {
     try {

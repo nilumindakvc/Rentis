@@ -1,14 +1,17 @@
+import stripe
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+import app.stripe_client  # noqa: F401  (configures the stripe SDK on import)
+from app.config import settings
 from app.crud import bookings as bookings_crud
 from app.database import get_db
 from app.deps import get_current_customer, get_current_owner
 from app.models.booking import Booking
-from app.models.enums import BookingStatus, NotificationType
+from app.models.enums import BookingStatus, NotificationType, PaymentStatus
 from app.models.notification import Notification
 from app.models.user import User
-from app.schemas.booking import BookingCreate, BookingOut
+from app.schemas.booking import BookingCreate, BookingOut, CheckoutSessionOut
 from app.ws_manager import manager
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
@@ -132,6 +135,46 @@ async def reject_booking(
     )
     await manager.send_to_user(booking.customer_id, {"type": "booking_rejected", "booking_id": booking.id})
     return bookings_crud.serialize(booking)
+
+
+@router.post("/{booking_id}/checkout", response_model=CheckoutSessionOut)
+def start_checkout(
+    booking_id: int,
+    db: Session = Depends(get_db),
+    customer: User = Depends(get_current_customer),
+):
+    booking = bookings_crud.get(db, booking_id)
+    if booking is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Booking not found")
+    if booking.customer_id != customer.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your booking")
+    if booking.status != BookingStatus.accepted:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only an accepted booking can be paid")
+    if booking.payment_status == PaymentStatus.paid:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This booking is already paid")
+    if not booking.owner.stripe_payouts_enabled:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The owner hasn't finished setting up payouts yet")
+
+    return_base = f"{settings.frontend_base_url}/customer/dashboard?tab=bookings"
+    session = stripe.checkout.Session.create(
+        mode="payment",
+        line_items=[
+            {
+                "price_data": {
+                    "currency": booking.currency.lower(),
+                    "unit_amount": int(round(float(booking.amount) * 100)),
+                    "product_data": {"name": booking.property.title},
+                },
+                "quantity": 1,
+            }
+        ],
+        payment_intent_data={"transfer_data": {"destination": booking.owner.stripe_account_id}},
+        success_url=f"{return_base}&payment=success",
+        cancel_url=f"{return_base}&payment=cancelled",
+        metadata={"booking_id": str(booking.id)},
+    )
+    bookings_crud.mark_checkout_started(db, booking, session.id)
+    return {"url": session.url}
 
 
 @router.patch("/{booking_id}/cancel", response_model=BookingOut)
