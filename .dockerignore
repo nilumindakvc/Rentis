@@ -1,0 +1,16 @@
+# Local environments and generated files
+**/.venv/
+**/venv/
+**/env/
+**/__pycache__/
+**/*.py[cod]
+**/node_modules/
+**/dist/
+
+# Secrets and local configuration
+**/.env
+
+# Not needed in the application image
+docs/
+stripexe/
+.git/

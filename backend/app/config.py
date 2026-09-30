@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = 45
     jwt_refresh_token_expire_days: int = 14
 
+    stripe_secret_key: str = ""
+    stripe_publishable_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_platform_country: str = "US"
+    frontend_base_url: str = "https://rentis.onrender.com"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property

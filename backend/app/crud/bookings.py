@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.crud import availability as availability_crud
 from app.models.booking import Booking
-from app.models.enums import BookingStatus, RentalTerm
+from app.models.enums import BookingStatus, PaymentStatus, RentalTerm
 from app.models.property import Property
 from app.schemas.availability import AvailabilityBlockCreate
 from app.schemas.booking import BookingCreate
@@ -39,6 +39,8 @@ def create_booking(db: Session, customer_id: int, payload: BookingCreate) -> Boo
         start_date=payload.start_date,
         end_date=payload.end_date,
         message=payload.message,
+        amount=prop.min_price,
+        currency=prop.price_currency,
     )
     db.add(booking)
     db.commit()
@@ -102,6 +104,23 @@ def cancel(db: Session, booking: Booking) -> Booking:
     return get(db, booking.id)
 
 
+def mark_checkout_started(db: Session, booking: Booking, session_id: str) -> Booking:
+    booking.stripe_checkout_session_id = session_id
+    db.commit()
+    return get(db, booking.id)
+
+
+def get_by_checkout_session(db: Session, session_id: str) -> Booking | None:
+    return _base_query(db).filter(Booking.stripe_checkout_session_id == session_id).first()
+
+
+def mark_paid(db: Session, booking: Booking, payment_intent_id: str | None) -> Booking:
+    booking.payment_status = PaymentStatus.paid
+    booking.stripe_payment_intent_id = payment_intent_id
+    db.commit()
+    return get(db, booking.id)
+
+
 def serialize(booking: Booking) -> dict:
     return {
         "id": booking.id,
@@ -115,6 +134,9 @@ def serialize(booking: Booking) -> dict:
         "end_date": booking.end_date,
         "status": booking.status,
         "message": booking.message,
+        "amount": booking.amount,
+        "currency": booking.currency,
+        "payment_status": booking.payment_status,
         "created_at": booking.created_at,
         "updated_at": booking.updated_at,
     }

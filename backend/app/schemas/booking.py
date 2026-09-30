@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel
 
-from app.models.enums import BookingStatus
+from app.models.enums import BookingStatus, PaymentStatus
 
 
 class BookingCreate(BaseModel):
@@ -24,5 +24,12 @@ class BookingOut(BaseModel):
     end_date: date
     status: BookingStatus
     message: str | None
+    amount: float
+    currency: str
+    payment_status: PaymentStatus
     created_at: datetime
     updated_at: datetime
+
+
+class CheckoutSessionOut(BaseModel):
+    url: str

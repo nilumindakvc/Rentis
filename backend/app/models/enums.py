@@ -58,6 +58,7 @@ class NotificationType(str, enum.Enum):
     booking_request = "booking_request"
     booking_accepted = "booking_accepted"
     booking_rejected = "booking_rejected"
+    booking_paid = "booking_paid"
 
 
 class BookingStatus(str, enum.Enum):
@@ -65,3 +66,8 @@ class BookingStatus(str, enum.Enum):
     accepted = "accepted"
     rejected = "rejected"
     cancelled = "cancelled"
+
+
+class PaymentStatus(str, enum.Enum):
+    unpaid = "unpaid"
+    paid = "paid"
