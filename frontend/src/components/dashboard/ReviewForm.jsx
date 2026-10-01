@@ -55,9 +55,15 @@ export default function ReviewForm({ booking, review, onSaved }) {
             &#9998;
           </button>
         </div>
-        <div className="review-rating mt-2" aria-label={`${review.rating} out of 5 stars`}>
+        <div
+          className="review-rating mt-2"
+          aria-label={`${review.rating} out of 5 stars`}
+        >
           {[1, 2, 3, 4, 5].map((value) => (
-            <span key={value} className={`review-rating__star${value <= review.rating ? " is-selected" : ""}`}>
+            <span
+              key={value}
+              className={`review-rating__star${value <= review.rating ? " is-selected" : ""}`}
+            >
               {value <= review.rating ? "★" : "☆"}
             </span>
           ))}
@@ -112,7 +118,12 @@ export default function ReviewForm({ booking, review, onSaved }) {
           checked={showName}
           onChange={(event) => setShowName(event.target.checked)}
         />
-        <Button type="submit" size="sm" className="align-self-start" disabled={saving}>
+        <Button
+          type="submit"
+          size="sm"
+          className="align-self-start"
+          disabled={saving}
+        >
           {saving ? "Saving..." : review ? "Update review" : "Submit review"}
         </Button>
       </div>

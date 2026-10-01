@@ -81,7 +81,9 @@ function MyBookingsTab() {
     setReviews((prev) => {
       const exists = prev.some((review) => review.id === savedReview.id);
       return exists
-        ? prev.map((review) => (review.id === savedReview.id ? savedReview : review))
+        ? prev.map((review) =>
+            review.id === savedReview.id ? savedReview : review,
+          )
         : [savedReview, ...prev];
     });
   };
@@ -104,60 +106,64 @@ function MyBookingsTab() {
         const eligible = b.status === "accepted" || b.payment_status === "paid";
         return (
           <Card key={b.id}>
-          <Card.Body className="d-flex justify-content-between align-items-start flex-wrap gap-3">
-            <div>
-              <div className="d-flex align-items-center gap-2 mb-1">
-                <Link
-                  to={`/properties/${b.property_id}`}
-                  className="fw-semibold text-decoration-none"
-                >
-                  {b.property_title}
-                </Link>
-                <Badge
-                  bg={STATUS_VARIANT[b.status]}
-                  className="text-capitalize"
-                >
-                  {b.status}
-                </Badge>
-                {b.status === "accepted" && (
+            <Card.Body className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+              <div>
+                <div className="d-flex align-items-center gap-2 mb-1">
+                  <Link
+                    to={`/properties/${b.property_id}`}
+                    className="fw-semibold text-decoration-none"
+                  >
+                    {b.property_title}
+                  </Link>
                   <Badge
-                    bg={PAYMENT_VARIANT[b.payment_status]}
+                    bg={STATUS_VARIANT[b.status]}
                     className="text-capitalize"
                   >
-                    {b.payment_status}
+                    {b.status}
                   </Badge>
+                  {b.status === "accepted" && (
+                    <Badge
+                      bg={PAYMENT_VARIANT[b.payment_status]}
+                      className="text-capitalize"
+                    >
+                      {b.payment_status}
+                    </Badge>
+                  )}
+                </div>
+                <p className="mb-1 small">
+                  {b.start_date} → {b.end_date} · {b.currency}{" "}
+                  {Number(b.amount).toLocaleString()}
+                </p>
+                {b.message && (
+                  <p className="mb-1 text-muted small">{b.message}</p>
                 )}
               </div>
-              <p className="mb-1 small">
-                {b.start_date} → {b.end_date} · {b.currency}{" "}
-                {Number(b.amount).toLocaleString()}
-              </p>
-              {b.message && (
-                <p className="mb-1 text-muted small">{b.message}</p>
+              {b.status === "pending" && (
+                <Button
+                  size="sm"
+                  variant="outline-danger"
+                  onClick={() => handleCancel(b.id)}
+                >
+                  Cancel request
+                </Button>
               )}
-            </div>
-            {b.status === "pending" && (
-              <Button
-                size="sm"
-                variant="outline-danger"
-                onClick={() => handleCancel(b.id)}
-              >
-                Cancel request
-              </Button>
-            )}
-            {b.status === "accepted" && b.payment_status === "unpaid" && (
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => handlePay(b.id)}
-              >
-                Pay now
-              </Button>
-            )}
-          </Card.Body>
+              {b.status === "accepted" && b.payment_status === "unpaid" && (
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => handlePay(b.id)}
+                >
+                  Pay now
+                </Button>
+              )}
+            </Card.Body>
             {eligible && (
               <Card.Footer>
-                <ReviewForm booking={b} review={review} onSaved={handleReviewSaved} />
+                <ReviewForm
+                  booking={b}
+                  review={review}
+                  onSaved={handleReviewSaved}
+                />
               </Card.Footer>
             )}
           </Card>
