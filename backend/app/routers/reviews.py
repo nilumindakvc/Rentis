@@ -47,5 +47,7 @@ def update_review(
 ):
     review = reviews_crud.get_for_customer(db, review_id, customer.id)
     if review is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Review not found"
+        )
     return reviews_crud.serialize(reviews_crud.update(db, review, payload))

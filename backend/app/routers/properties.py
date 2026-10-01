@@ -63,9 +63,14 @@ def search_properties(
 
 
 @router.get("/mine", response_model=list[OwnerPropertyOut])
-def my_properties(db: Session = Depends(get_db), owner: User = Depends(get_current_owner)):
+def my_properties(
+    db: Session = Depends(get_db), owner: User = Depends(get_current_owner)
+):
     pairs = properties_crud.get_owner_properties(db, owner.id)
-    return [properties_crud.serialize_full(p, conversation_count=count) for p, count in pairs]
+    return [
+        properties_crud.serialize_full(p, conversation_count=count)
+        for p, count in pairs
+    ]
 
 
 @router.get("/{property_id}", response_model=PropertyOut)
@@ -76,7 +81,9 @@ def get_property(
 ):
     prop = properties_crud.get_property(db, property_id)
     if prop is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Property not found"
+        )
 
     if user is None or user.id != prop.owner_id:
         properties_crud.increment_view_count(db, prop)
@@ -89,7 +96,9 @@ def get_property(
 def get_property_reviews(property_id: int, db: Session = Depends(get_db)):
     prop = properties_crud.get_property(db, property_id)
     if prop is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Property not found"
+        )
     if prop.rental_term not in (RentalTerm.short_term, RentalTerm.medium_term):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -114,9 +123,13 @@ def create_property(
 def _get_owned_property(db: Session, property_id: int, owner: User):
     prop = properties_crud.get_property(db, property_id)
     if prop is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Property not found"
+        )
     if prop.owner_id != owner.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this listing")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this listing"
+        )
     return prop
 
 

@@ -97,7 +97,9 @@ def serialize(review: Review, *, public: bool = False) -> dict:
         "property_id": review.property_id,
         "booking_id": review.booking_id,
         "customer_id": review.customer_id,
-        "customer_name": review.customer.name if not public or review.show_name else "Anonymous",
+        "customer_name": review.customer.name
+        if not public or review.show_name
+        else "Anonymous",
         "rating": review.rating,
         "comment": review.comment,
         "show_name": review.show_name,
