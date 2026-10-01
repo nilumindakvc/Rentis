@@ -160,6 +160,15 @@ export const bookingsApi = {
   checkout: (id) => client.post(`/bookings/${id}/checkout`).then((r) => r.data),
 };
 
+export const reviewsApi = {
+  listForProperty: (propertyId) =>
+    client.get(`/properties/${propertyId}/reviews`).then((r) => r.data),
+  mine: () => client.get("/reviews/mine").then((r) => r.data),
+  create: (payload) => client.post("/reviews", payload).then((r) => r.data),
+  update: (id, payload) =>
+    client.put(`/reviews/${id}`, payload).then((r) => r.data),
+};
+
 export const paymentsApi = {
   connectOnboard: (country) =>
     client.post("/payments/connect/onboard", { country }).then((r) => r.data),

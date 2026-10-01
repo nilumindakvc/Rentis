@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.crud import properties as properties_crud
+from app.crud import reviews as reviews_crud
 from app.database import get_db
 from app.deps import get_current_owner, get_optional_user
 from app.models.enums import RentalTerm
@@ -15,6 +16,7 @@ from app.schemas.property import (
     PropertySummaryOut,
     PropertyUpdate,
 )
+from app.schemas.review import ReviewOut
 
 router = APIRouter(prefix="/properties", tags=["properties"])
 
@@ -81,6 +83,22 @@ def get_property(
 
     favorited = properties_crud.is_favorited(db, property_id, user.id if user else None)
     return properties_crud.serialize_full(prop, favorited=favorited)
+
+
+@router.get("/{property_id}/reviews", response_model=list[ReviewOut])
+def get_property_reviews(property_id: int, db: Session = Depends(get_db)):
+    prop = properties_crud.get_property(db, property_id)
+    if prop is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+    if prop.rental_term not in (RentalTerm.short_term, RentalTerm.medium_term):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reviews are only available for short-term and medium-term listings",
+        )
+    return [
+        reviews_crud.serialize(review, public=True)
+        for review in reviews_crud.list_for_property(db, property_id)
+    ]
 
 
 @router.post("", response_model=PropertyOut, status_code=status.HTTP_201_CREATED)

@@ -37,3 +37,4 @@ class Booking(Base):
     property = relationship("Property", back_populates="bookings")
     customer = relationship("User", foreign_keys=[customer_id])
     owner = relationship("User", foreign_keys=[owner_id])
+    review = relationship("Review", back_populates="booking", uselist=False, cascade="all, delete-orphan")

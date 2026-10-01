@@ -1,16 +1,27 @@
-import { Link } from 'react-router-dom'
-import PropertyGrid from '../property/PropertyGrid'
-import LoadingSpinner from '../common/LoadingSpinner'
+import { Link } from "react-router-dom";
+import PropertyGrid from "../property/PropertyGrid";
+import LoadingSpinner from "../common/LoadingSpinner";
 
-export default function RentalTermSection({ title, description, rentalTerm, subtypes, properties, tinted, loading }) {
+export default function RentalTermSection({
+  title,
+  description,
+  rentalTerm,
+  subtypes,
+  properties,
+  tinted,
+  loading,
+}) {
   return (
-    <section className={`py-4 px-3 px-md-4 rounded-4 mb-5 ${tinted ? 'section-tinted' : ''}`}>
+    <section className="py-4 px-3 px-md-4 mb-5">
       <div className="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-2">
         <div>
           <h2 className="h5 mb-1">{title}</h2>
           <p className="text-muted small mb-0">{description}</p>
         </div>
-        <Link to={`/search?rental_term=${rentalTerm}`} className="small text-nowrap">
+        <Link
+          to={`/search?rental_term=${rentalTerm}`}
+          className="small text-nowrap"
+        >
           See all →
         </Link>
       </div>
@@ -29,7 +40,11 @@ export default function RentalTermSection({ title, description, rentalTerm, subt
         </div>
       )}
 
-      {loading ? <LoadingSpinner label="Loading…" /> : <PropertyGrid properties={properties} columns={4} />}
+      {loading ? (
+        <LoadingSpinner label="Loading…" />
+      ) : (
+        <PropertyGrid properties={properties} columns={4} />
+      )}
     </section>
-  )
+  );
 }

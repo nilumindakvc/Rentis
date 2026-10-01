@@ -11,6 +11,7 @@ from app.models.admin import Admin
 from app.models.admin_refresh_token import AdminRefreshToken
 from app.models.availability_block import AvailabilityBlock
 from app.models.booking import Booking
+from app.models.review import Review
 
 __all__ = [
     "User",
@@ -27,4 +28,5 @@ __all__ = [
     "AdminRefreshToken",
     "AvailabilityBlock",
     "Booking",
+    "Review",
 ]

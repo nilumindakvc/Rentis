@@ -97,3 +97,4 @@ class Property(Base):
         "AvailabilityBlock", back_populates="property", cascade="all, delete-orphan"
     )
     bookings = relationship("Booking", back_populates="property", cascade="all, delete-orphan")
+    reviews = relationship("Review", back_populates="property", cascade="all, delete-orphan")

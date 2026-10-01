@@ -24,6 +24,7 @@ from app.routers import (
     owner_stats,
     payments,
     properties,
+    reviews,
     taxonomy,
     uploads,
     ws,
@@ -53,6 +54,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(taxonomy.router)
 app.include_router(properties.router)
+app.include_router(reviews.router)
 app.include_router(availability.router)
 app.include_router(bookings.router)
 app.include_router(favorites.router)
