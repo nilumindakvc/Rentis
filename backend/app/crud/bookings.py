@@ -10,7 +10,11 @@ from app.schemas.booking import BookingCreate
 
 BOOKABLE_RENTAL_TERMS = (RentalTerm.short_term, RentalTerm.medium_term)
 
-RELATIONSHIPS = (joinedload(Booking.property), joinedload(Booking.customer), joinedload(Booking.owner))
+RELATIONSHIPS = (
+    joinedload(Booking.property),
+    joinedload(Booking.customer),
+    joinedload(Booking.owner),
+)
 
 
 def _base_query(db: Session):
@@ -26,7 +30,9 @@ def create_booking(db: Session, customer_id: int, payload: BookingCreate) -> Boo
     if prop is None:
         raise ValueError("Property not found")
     if prop.rental_term not in BOOKABLE_RENTAL_TERMS:
-        raise PermissionError("Booking requests are only available for short-term and medium-term listings")
+        raise PermissionError(
+            "Booking requests are only available for short-term and medium-term listings"
+        )
     if payload.start_date > payload.end_date:
         raise ValueError("start_date must not be after end_date")
     if availability_crud.overlaps(db, prop.id, payload.start_date, payload.end_date):
@@ -49,10 +55,17 @@ def create_booking(db: Session, customer_id: int, payload: BookingCreate) -> Boo
 
 
 def list_for_customer(db: Session, customer_id: int) -> list[Booking]:
-    return _base_query(db).filter(Booking.customer_id == customer_id).order_by(Booking.created_at.desc()).all()
+    return (
+        _base_query(db)
+        .filter(Booking.customer_id == customer_id)
+        .order_by(Booking.created_at.desc())
+        .all()
+    )
 
 
-def list_for_owner(db: Session, owner_id: int, status: str | None = None) -> list[Booking]:
+def list_for_owner(
+    db: Session, owner_id: int, status: str | None = None
+) -> list[Booking]:
     query = _base_query(db).filter(Booking.owner_id == owner_id)
     if status:
         query = query.filter(Booking.status == status)
@@ -60,7 +73,9 @@ def list_for_owner(db: Session, owner_id: int, status: str | None = None) -> lis
 
 
 def accept(db: Session, booking: Booking) -> tuple[Booking, list[Booking]]:
-    if availability_crud.overlaps(db, booking.property_id, booking.start_date, booking.end_date):
+    if availability_crud.overlaps(
+        db, booking.property_id, booking.start_date, booking.end_date
+    ):
         raise LookupError("Those dates are no longer available")
 
     availability_crud.create_block(
@@ -81,7 +96,10 @@ def accept(db: Session, booking: Booking) -> tuple[Booking, list[Booking]]:
             Booking.property_id == booking.property_id,
             Booking.id != booking.id,
             Booking.status == BookingStatus.pending,
-            and_(Booking.start_date <= booking.end_date, Booking.end_date >= booking.start_date),
+            and_(
+                Booking.start_date <= booking.end_date,
+                Booking.end_date >= booking.start_date,
+            ),
         )
         .all()
     )
@@ -111,7 +129,9 @@ def mark_checkout_started(db: Session, booking: Booking, session_id: str) -> Boo
 
 
 def get_by_checkout_session(db: Session, session_id: str) -> Booking | None:
-    return _base_query(db).filter(Booking.stripe_checkout_session_id == session_id).first()
+    return (
+        _base_query(db).filter(Booking.stripe_checkout_session_id == session_id).first()
+    )
 
 
 def mark_paid(db: Session, booking: Booking, payment_intent_id: str | None) -> Booking:
@@ -139,4 +159,5 @@ def serialize(booking: Booking) -> dict:
         "payment_status": booking.payment_status,
         "created_at": booking.created_at,
         "updated_at": booking.updated_at,
+        "has_review": booking.review is not None,
     }

@@ -1,33 +1,38 @@
-import { useEffect, useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Badge from 'react-bootstrap/Badge'
-import Card from 'react-bootstrap/Card'
-import PhotoGallery from './PhotoGallery'
-import MapView from './MapView'
-import FavoriteButton from './FavoriteButton'
-import PropertySection from './PropertySection'
-import AvailabilityCalendar from './AvailabilityCalendar'
-import BookingRequestForm from './BookingRequestForm'
-import { RENTAL_TERM_LABELS } from '../../constants/categoryIcons'
-import { availabilityApi } from '../../services/api'
-import { useAuth } from '../../context/AuthContext'
+import { useEffect, useState } from "react";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Badge from "react-bootstrap/Badge";
+import Card from "react-bootstrap/Card";
+import PhotoGallery from "./PhotoGallery";
+import MapView from "./MapView";
+import FavoriteButton from "./FavoriteButton";
+import PropertySection from "./PropertySection";
+import AvailabilityCalendar from "./AvailabilityCalendar";
+import BookingRequestForm from "./BookingRequestForm";
+import PropertyReviews from "./PropertyReviews";
+import { RENTAL_TERM_LABELS } from "../../constants/categoryIcons";
+import { availabilityApi } from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 
-const CALENDAR_RENTAL_TERMS = ['medium_term', 'short_term']
+const CALENDAR_RENTAL_TERMS = ["medium_term", "short_term"];
 
-export default function PropertyDetailView({ property, showFavorite = true, actions }) {
-  const { user } = useAuth()
-  const showCalendar = CALENDAR_RENTAL_TERMS.includes(property.rental_term)
-  const canBook = showCalendar && user?.role === 'customer'
-  const [blocks, setBlocks] = useState([])
+export default function PropertyDetailView({
+  property,
+  showFavorite = true,
+  actions,
+}) {
+  const { user } = useAuth();
+  const showCalendar = CALENDAR_RENTAL_TERMS.includes(property.rental_term);
+  const canBook = showCalendar && user?.role === "customer";
+  const [blocks, setBlocks] = useState([]);
 
   useEffect(() => {
-    if (!showCalendar) return
+    if (!showCalendar) return;
     availabilityApi
       .list(property.id)
       .then(setBlocks)
-      .catch(() => setBlocks([]))
-  }, [property.id, showCalendar])
+      .catch(() => setBlocks([]));
+  }, [property.id, showCalendar]);
 
   return (
     <Row className="g-4">
@@ -43,7 +48,10 @@ export default function PropertyDetailView({ property, showFavorite = true, acti
             <p className="text-muted mb-0">{property.address_text}</p>
           </div>
           {showFavorite && (
-            <FavoriteButton propertyId={property.id} initialFavorited={property.is_favorited} />
+            <FavoriteButton
+              propertyId={property.id}
+              initialFavorited={property.is_favorited}
+            />
           )}
         </div>
 
@@ -52,31 +60,44 @@ export default function PropertyDetailView({ property, showFavorite = true, acti
         <PropertySection
           title="Property"
           rows={[
-            ['Size', property.size_value ? `${property.size_value} ${property.size_unit || ''}` : null],
-            ['Layout', property.layout_description],
-            ['Facilities', (property.facilities || []).join(', ')],
-            ['Condition', property.condition],
-            ['Furnishing', property.furnishing],
-            ['Capacity', property.capacity],
+            [
+              "Size",
+              property.size_value
+                ? `${property.size_value} ${property.size_unit || ""}`
+                : null,
+            ],
+            ["Layout", property.layout_description],
+            ["Facilities", (property.facilities || []).join(", ")],
+            ["Condition", property.condition],
+            ["Furnishing", property.furnishing],
+            ["Capacity", property.capacity],
           ]}
         />
 
         <PropertySection
           title="Rental"
           rows={[
-            ['Minimum price', `${property.price_currency} ${Number(property.min_price).toLocaleString()}`],
             [
-              'Security deposit',
+              "Minimum price",
+              `${property.price_currency} ${Number(property.min_price).toLocaleString()}`,
+            ],
+            [
+              "Security deposit",
               property.security_deposit
                 ? `${property.price_currency} ${Number(property.security_deposit).toLocaleString()}`
                 : null,
             ],
-            ['Rental duration', RENTAL_TERM_LABELS[property.rental_term] || property.rental_term],
-            ['Renewal terms', property.renewal_terms],
-            ['Availability', property.availability_status],
             [
-              'Additional charges',
-              (property.additional_charges || []).map((c) => `${c.label}: ${c.amount}`).join(', '),
+              "Rental duration",
+              RENTAL_TERM_LABELS[property.rental_term] || property.rental_term,
+            ],
+            ["Renewal terms", property.renewal_terms],
+            ["Availability", property.availability_status],
+            [
+              "Additional charges",
+              (property.additional_charges || [])
+                .map((c) => `${c.label}: ${c.amount}`)
+                .join(", "),
             ],
           ]}
         />
@@ -84,10 +105,15 @@ export default function PropertyDetailView({ property, showFavorite = true, acti
         <PropertySection
           title="Rules"
           rows={[
-            ['Permitted usage', property.permitted_usage],
-            ['Restrictions', property.restrictions],
-            ['Parking / access', property.parking_access],
+            ["Permitted usage", property.permitted_usage],
+            ["Restrictions", property.restrictions],
+            ["Parking / access", property.parking_access],
           ]}
+        />
+
+        <PropertyReviews
+          propertyId={property.id}
+          rentalTerm={property.rental_term}
         />
       </Col>
 
@@ -97,7 +123,14 @@ export default function PropertyDetailView({ property, showFavorite = true, acti
             <h3 className="h6 mb-2">Location</h3>
             {property.latitude != null && property.longitude != null ? (
               <MapView
-                markers={[{ id: property.id, lat: property.latitude, lng: property.longitude, title: property.title }]}
+                markers={[
+                  {
+                    id: property.id,
+                    lat: property.latitude,
+                    lng: property.longitude,
+                    title: property.title,
+                  },
+                ]}
                 center={[property.latitude, property.longitude]}
                 zoom={14}
                 height={280}
@@ -132,5 +165,5 @@ export default function PropertyDetailView({ property, showFavorite = true, acti
         )}
       </Col>
     </Row>
-  )
+  );
 }

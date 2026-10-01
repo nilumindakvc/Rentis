@@ -5,6 +5,7 @@ Revises: 0006
 Create Date: 2026-09-20
 
 """
+
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -22,17 +23,39 @@ payment_status = PGEnum("unpaid", "paid", name="payment_status", create_type=Fal
 def upgrade() -> None:
     payment_status.create(op.get_bind(), checkfirst=True)
 
-    op.add_column("bookings", sa.Column("amount", sa.Numeric(12, 2), nullable=False, server_default="0"))
-    op.add_column("bookings", sa.Column("currency", sa.String(10), nullable=False, server_default="LKR"))
     op.add_column(
-        "bookings", sa.Column("payment_status", payment_status, nullable=False, server_default="unpaid")
+        "bookings",
+        sa.Column("amount", sa.Numeric(12, 2), nullable=False, server_default="0"),
     )
-    op.add_column("bookings", sa.Column("stripe_checkout_session_id", sa.String(255), nullable=True))
-    op.add_column("bookings", sa.Column("stripe_payment_intent_id", sa.String(255), nullable=True))
-
-    op.add_column("users", sa.Column("stripe_account_id", sa.String(255), nullable=True))
     op.add_column(
-        "users", sa.Column("stripe_payouts_enabled", sa.Boolean(), nullable=False, server_default="false")
+        "bookings",
+        sa.Column("currency", sa.String(10), nullable=False, server_default="LKR"),
+    )
+    op.add_column(
+        "bookings",
+        sa.Column(
+            "payment_status", payment_status, nullable=False, server_default="unpaid"
+        ),
+    )
+    op.add_column(
+        "bookings",
+        sa.Column("stripe_checkout_session_id", sa.String(255), nullable=True),
+    )
+    op.add_column(
+        "bookings", sa.Column("stripe_payment_intent_id", sa.String(255), nullable=True)
+    )
+
+    op.add_column(
+        "users", sa.Column("stripe_account_id", sa.String(255), nullable=True)
+    )
+    op.add_column(
+        "users",
+        sa.Column(
+            "stripe_payouts_enabled",
+            sa.Boolean(),
+            nullable=False,
+            server_default="false",
+        ),
     )
 
     op.execute("ALTER TYPE notification_type ADD VALUE IF NOT EXISTS 'booking_paid'")

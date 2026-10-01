@@ -29,6 +29,7 @@ class BookingOut(BaseModel):
     payment_status: PaymentStatus
     created_at: datetime
     updated_at: datetime
+    has_review: bool = False
 
 
 class CheckoutSessionOut(BaseModel):

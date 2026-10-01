@@ -1,0 +1,19 @@
+
+advertisement removeal
+----------------------------------------------------
+1.onced a property is rented , if it is a long term property, that should be removed from the site. 
+2.property owner should be able to remove the advertisement at any time
+
+
+Reviews and ratings
+------------------------------------
+1.users are  allowed to put a reviwes onced the proerty is booked only
+2.reviwes can be anlyzed for semantic meaning(use a appropriate package) and build rating based on that
+
+
+user experince
+----------------------------------
+1.users can save their search catogories and details and once matching advertisement come, users
+  will be notified
+
+  
