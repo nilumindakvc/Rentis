@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import FilterBar from "../components/property/FilterBar";
 import PropertyGrid from "../components/property/PropertyGrid";
 import MapView from "../components/property/MapView";
@@ -16,12 +14,14 @@ const PAGE_SIZE = 9;
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState({
+    primary_category_id: searchParams.get("primary_category_id") || "",
     category_id: searchParams.get("category_id") || "",
     subtype_id: searchParams.get("subtype_id") || "",
-    q: "",
+    q: searchParams.get("q") || "",
     min_price: "",
     max_price: "",
     rental_term: searchParams.get("rental_term") || "",
+    featured: searchParams.get("featured") === "true" ? true : undefined,
     sort: "newest",
   });
   const [page, setPage] = useState(1);
@@ -77,7 +77,7 @@ export default function SearchPage() {
     }));
 
   return (
-    <Container fluid className="px-3 px-md-4">
+    <Container className="py-3">
       <FilterBar
         filters={filters}
         onChange={setFilters}
@@ -86,40 +86,37 @@ export default function SearchPage() {
 
       {error && <ErrorAlert error={error} />}
 
-      <Row className="g-4">
-        <Col lg={8}>
-          {loading ? (
-            <LoadingSpinner label="Searching listings…" />
-          ) : (
-            <>
-              <p className="text-muted small">
-                {result.total} propert{result.total === 1 ? "y" : "ies"} found
-              </p>
-              <PropertyGrid properties={result.items} columns={3} />
-              <Pagination
-                page={page}
-                pageCount={pageCount}
-                onChange={setPage}
-              />
-            </>
-          )}
-        </Col>
-        <Col lg={4}>
-          <div className="sticky-top" style={{ top: 90 }}>
-            <p className="text-muted small mb-3">Location</p>
-            <MapView
-              markers={markers}
-              height={520}
-              renderPopup={(m) => (
-                <div>
-                  <div className="fw-semibold">{m.title}</div>
-                  <Link to={`/properties/${m.id}`}>View details</Link>
-                </div>
-              )}
-            />
-          </div>
-        </Col>
-      </Row>
+      {loading ? (
+        <LoadingSpinner label="Searching listings…" />
+      ) : (
+        <>
+          <p className="text-muted small">
+            {result.total} propert{result.total === 1 ? "y" : "ies"} found
+          </p>
+          <PropertyGrid properties={result.items} columns={3} />
+          <Pagination
+            page={page}
+            pageCount={pageCount}
+            onChange={setPage}
+          />
+        </>
+      )}
+
+      {markers.length > 0 && (
+        <div className="mt-4 mb-4">
+          <p className="text-muted small mb-2">Locations on map</p>
+          <MapView
+            markers={markers}
+            height={420}
+            renderPopup={(m) => (
+              <div>
+                <div className="fw-semibold">{m.title}</div>
+                <Link to={`/properties/${m.id}`}>View details</Link>
+              </div>
+            )}
+          />
+        </div>
+      )}
     </Container>
   );
 }

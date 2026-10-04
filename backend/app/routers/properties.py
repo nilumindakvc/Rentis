@@ -23,11 +23,13 @@ router = APIRouter(prefix="/properties", tags=["properties"])
 
 @router.get("", response_model=PaginatedResponse[PropertySummaryOut])
 def search_properties(
+    primary_category_id: int | None = None,
     category_id: int | None = None,
     subtype_id: int | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
     rental_term: RentalTerm | None = None,
+    featured: bool | None = None,
     q: str | None = None,
     north: float | None = None,
     south: float | None = None,
@@ -40,11 +42,13 @@ def search_properties(
 ):
     items, total = properties_crud.search_properties(
         db,
+        primary_category_id=primary_category_id,
         category_id=category_id,
         subtype_id=subtype_id,
         min_price=min_price,
         max_price=max_price,
         rental_term=rental_term.value if rental_term else None,
+        featured=featured,
         q=q,
         north=north,
         south=south,

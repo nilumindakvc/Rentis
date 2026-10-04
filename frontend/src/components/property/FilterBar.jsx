@@ -17,23 +17,37 @@ const SORT_OPTIONS = [
 ];
 
 export default function FilterBar({ filters, onChange, onSubmit }) {
-  const [categories, setCategories] = useState([]);
+  const [primaryCategories, setPrimaryCategories] = useState([]);
 
   useEffect(() => {
     taxonomyApi
-      .getCategories()
-      .then(setCategories)
-      .catch(() => setCategories([]));
+      .getPrimaryCategories()
+      .then(setPrimaryCategories)
+      .catch(() => setPrimaryCategories([]));
   }, []);
 
+  // Secondary categories for the selected primary
+  const secondaryCategories = useMemo(() => {
+    if (!filters.primary_category_id) return primaryCategories.flatMap((p) => p.secondary_categories || []);
+    const primary = primaryCategories.find(
+      (p) => String(p.id) === String(filters.primary_category_id),
+    );
+    return primary?.secondary_categories || [];
+  }, [primaryCategories, filters.primary_category_id]);
+
+  // Subtypes for the selected secondary category
   const subtypes = useMemo(() => {
-    const cat = categories.find(
+    const cat = secondaryCategories.find(
       (c) => String(c.id) === String(filters.category_id),
     );
     return cat?.subtypes || [];
-  }, [categories, filters.category_id]);
+  }, [secondaryCategories, filters.category_id]);
 
   const set = (patch) => onChange({ ...filters, ...patch });
+
+  const handlePrimaryChange = (primaryId) => {
+    set({ primary_category_id: primaryId, category_id: "", subtype_id: "" });
+  };
 
   const handleCategoryChange = (e) => {
     set({ category_id: e.target.value, subtype_id: "" });
@@ -44,17 +58,50 @@ export default function FilterBar({ filters, onChange, onSubmit }) {
     onSubmit?.();
   };
 
+  const eyebrowLabel = filters.primary_category_id
+    ? (primaryCategories.find((p) => String(p.id) === String(filters.primary_category_id))?.name.toUpperCase() ?? "PROPERTY") + " SEARCH"
+    : "PROPERTY SEARCH";
+
   return (
     <Form onSubmit={handleSubmit} className="search-filter mb-4">
       <div className="search-filter__header">
         <div>
-          <p className="search-filter__eyebrow">PROPERTY SEARCH</p>
-          <h1>Find your next space</h1>
+          <p className="search-filter__eyebrow">{eyebrowLabel}</p>
+          <h1>Find your next rental</h1>
           <p className="search-filter__intro">
             Narrow down listings to find the right fit.
           </p>
         </div>
       </div>
+
+      {/* Primary category tabs */}
+      {primaryCategories.length > 0 && (
+        <div className="d-flex gap-2 px-4 pb-3 flex-wrap">
+          <Button
+            type="button"
+            size="sm"
+            variant={!filters.primary_category_id ? "primary" : "outline-secondary"}
+            onClick={() => handlePrimaryChange("")}
+          >
+            All
+          </Button>
+          {primaryCategories.map((p) => (
+            <Button
+              key={p.id}
+              type="button"
+              size="sm"
+              variant={
+                String(filters.primary_category_id) === String(p.id)
+                  ? "primary"
+                  : "outline-secondary"
+              }
+              onClick={() => handlePrimaryChange(p.id)}
+            >
+              {p.name}
+            </Button>
+          ))}
+        </div>
+      )}
 
       <div className="search-filter__fields">
         <Form.Group
@@ -78,7 +125,7 @@ export default function FilterBar({ filters, onChange, onSubmit }) {
             onChange={handleCategoryChange}
           >
             <option value="">All categories</option>
-            {categories.map((c) => (
+            {secondaryCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>

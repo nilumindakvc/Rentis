@@ -11,7 +11,7 @@ def get_or_create_connect_account(db: Session, owner: User, country: str) -> str
         return owner.stripe_account_id
 
     # Only `transfers` is requested: this platform uses destination charges,
-    # meaning the customer's card is charged on Rentis's own account and the
+    # meaning the customer's card is charged on Rentit's own account and the
     # amount is transferred to the owner afterward. The connected account
     # itself never processes a card directly, so `card_payments` isn't
     # needed.

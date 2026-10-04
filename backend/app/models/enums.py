@@ -71,3 +71,15 @@ class BookingStatus(str, enum.Enum):
 class PaymentStatus(str, enum.Enum):
     unpaid = "unpaid"
     paid = "paid"
+
+
+class FuelType(str, enum.Enum):
+    petrol = "petrol"
+    diesel = "diesel"
+    electric = "electric"
+    hybrid = "hybrid"
+
+
+class TransmissionType(str, enum.Enum):
+    manual = "manual"
+    automatic = "automatic"

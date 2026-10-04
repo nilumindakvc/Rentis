@@ -58,17 +58,23 @@ class PlatformPropertyOut(BaseModel):
     title: str
     owner_id: int
     owner_name: str
+    primary_category_name: str
     category_name: str
     subtype_name: str
     status: ListingStatus
     min_price: float
     price_currency: str
     view_count: int
+    is_featured: bool = False
     created_at: datetime
 
 
 class PropertyStatusUpdate(BaseModel):
     status: ListingStatus
+
+
+class PropertyFeaturedUpdate(BaseModel):
+    is_featured: bool
 
 
 class PlatformStatsOut(BaseModel):

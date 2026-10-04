@@ -19,13 +19,16 @@ export default function NavBar() {
     <Navbar bg="white" expand="md" className="border-bottom shadow-sm mb-4" sticky="top">
       <Container>
         <Navbar.Brand as={NavLink} to="/" style={{ color: 'var(--rentis-accent)' }}>
-          Rentis
+          Rentit
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-nav" />
         <Navbar.Collapse id="main-nav">
           <Nav className="me-auto">
             <Nav.Link as={NavLink} to="/search">
               Search
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/pricing">
+              Pricing
             </Nav.Link>
             {user?.role === 'owner' && (
               <>

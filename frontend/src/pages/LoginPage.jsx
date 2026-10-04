@@ -57,7 +57,7 @@ export default function LoginPage() {
         <section className="login-form-panel" aria-labelledby="login-heading">
           <div className="login-form-inner">
             <p className="login-form__eyebrow">WELCOME BACK</p>
-            <h1 id="login-heading">Sign in to Rentis</h1>
+            <h1 id="login-heading">Sign in to Rentit</h1>
             <p className="login-form__intro">
               Continue to your rentals and messages.
             </p>
@@ -110,7 +110,7 @@ export default function LoginPage() {
             </Form>
 
             <p className="login-form__signup">
-              New to Rentis? <Link to="/signup">Create an account</Link>
+              New to Rentit? <Link to="/signup">Create an account</Link>
             </p>
           </div>
         </section>

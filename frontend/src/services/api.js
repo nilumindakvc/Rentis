@@ -78,7 +78,14 @@ export const authApi = {
 };
 
 export const taxonomyApi = {
-  getCategories: () => client.get("/taxonomy/categories").then((r) => r.data),
+  getPrimaryCategories: () =>
+    client.get("/taxonomy/primary-categories").then((r) => r.data),
+  getCategories: (params) =>
+    client.get("/taxonomy/categories", { params }).then((r) => r.data),
+};
+
+export const partnersApi = {
+  list: () => client.get("/partners").then((r) => r.data),
 };
 
 export const propertiesApi = {

@@ -4,7 +4,7 @@
 export const RENTAL_SECTIONS = [
   {
     key: "short_term",
-    title: "Rent for a day",
+    title: "Places — Rent for a day",
     description:
       "Halls, venues and getaways booked by the day — availability calendar coming soon.",
     tinted: true,
@@ -21,7 +21,7 @@ export const RENTAL_SECTIONS = [
   },
   {
     key: "medium_term",
-    title: "Short-term rentals",
+    title: "Places — Short-term",
     description:
       "By the week or month — parking, a room, or a place while you’re between leases.",
     tinted: true,
@@ -33,7 +33,7 @@ export const RENTAL_SECTIONS = [
   },
   {
     key: "long_term",
-    title: "Long-term rentals",
+    title: "Places — Long-term",
     description:
       "Years-long leases for homes and businesses settling in for the long haul.",
     tinted: false,
