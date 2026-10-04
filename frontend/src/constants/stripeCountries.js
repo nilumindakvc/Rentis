@@ -1,5 +1,5 @@
 // Countries Stripe currently supports for Express connected accounts.
-// LK (Sri Lanka) is listed first since it's Rentis's primary market, but any
+// LK (Sri Lanka) is listed first since it's Rentit's primary market, but any
 // owner can pick their own — the platform passes whichever one they choose.
 export const STRIPE_COUNTRIES = [
   { code: 'LK', name: 'Sri Lanka' },

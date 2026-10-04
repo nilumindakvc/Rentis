@@ -1,6 +1,6 @@
 import Carousel from 'react-bootstrap/Carousel'
 
-const PLACEHOLDER = 'https://placehold.co/800x500?text=Rentis'
+const PLACEHOLDER = 'https://placehold.co/800x500?text=Rentit'
 
 export default function PhotoGallery({ photos = [] }) {
   const items = photos.length > 0 ? photos : [{ id: 'placeholder', url: PLACEHOLDER }]

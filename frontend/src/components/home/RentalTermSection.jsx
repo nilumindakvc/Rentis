@@ -6,11 +6,14 @@ export default function RentalTermSection({
   title,
   description,
   rentalTerm,
+  searchHref,
   subtypes,
   properties,
   tinted,
   loading,
 }) {
+  const seeAllHref = searchHref ?? `/search?rental_term=${rentalTerm}`;
+
   return (
     <section className="py-4 px-3 px-md-4 mb-5">
       <div className="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-2">
@@ -19,7 +22,7 @@ export default function RentalTermSection({
           <p className="text-muted small mb-0">{description}</p>
         </div>
         <Link
-          to={`/search?rental_term=${rentalTerm}`}
+          to={seeAllHref}
           className="small text-nowrap"
         >
           See all →

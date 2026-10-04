@@ -3,14 +3,19 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.models.conversation import Conversation
 from app.models.favorite import Favorite
+from app.models.good_details import GoodDetails
 from app.models.photo import PropertyPhoto
 from app.models.property import Property
+from app.models.vehicle_details import VehicleDetails
 from app.schemas.property import PropertyCreate, PropertyStatusUpdate, PropertyUpdate
 
 PROPERTY_RELATIONSHIPS = (
     joinedload(Property.owner),
+    joinedload(Property.primary_category),
     joinedload(Property.category),
     joinedload(Property.subtype),
+    joinedload(Property.vehicle_details),
+    joinedload(Property.good_details),
     joinedload(Property.photos),
 )
 
@@ -24,24 +29,34 @@ def get_property(db: Session, property_id: int) -> Property | None:
 
 
 def list_all_for_admin(
-    db: Session, status_filter: str | None = None, category_id: int | None = None
+    db: Session,
+    status_filter: str | None = None,
+    primary_category_id: int | None = None,
+    category_id: int | None = None,
+    featured: bool | None = None,
 ) -> list[Property]:
     query = _base_query(db)
     if status_filter:
         query = query.filter(Property.status == status_filter)
+    if primary_category_id:
+        query = query.filter(Property.primary_category_id == primary_category_id)
     if category_id:
         query = query.filter(Property.category_id == category_id)
+    if featured is not None:
+        query = query.filter(Property.is_featured == featured)
     return query.order_by(Property.created_at.desc()).all()
 
 
 def search_properties(
     db: Session,
     *,
+    primary_category_id: int | None = None,
     category_id: int | None = None,
     subtype_id: int | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
     rental_term: str | None = None,
+    featured: bool | None = None,
     q: str | None = None,
     north: float | None = None,
     south: float | None = None,
@@ -53,6 +68,8 @@ def search_properties(
 ):
     query = _base_query(db).filter(Property.status == "published")
 
+    if primary_category_id:
+        query = query.filter(Property.primary_category_id == primary_category_id)
     if category_id:
         query = query.filter(Property.category_id == category_id)
     if subtype_id:
@@ -63,6 +80,8 @@ def search_properties(
         query = query.filter(Property.min_price <= max_price)
     if rental_term:
         query = query.filter(Property.rental_term == rental_term)
+    if featured is not None:
+        query = query.filter(Property.is_featured == featured)
     if q:
         like = f"%{q}%"
         query = query.filter(or_(Property.title.ilike(like), Property.address_text.ilike(like)))
@@ -104,7 +123,9 @@ def get_owner_properties(db: Session, owner_id: int) -> list[tuple[Property, int
 
 
 def create_property(db: Session, owner_id: int, payload: PropertyCreate) -> Property:
-    data = payload.model_dump(exclude={"photos", "additional_charges"})
+    data = payload.model_dump(
+        exclude={"photos", "additional_charges", "vehicle_details", "good_details"}
+    )
     prop = Property(
         owner_id=owner_id,
         additional_charges=[c.model_dump() for c in payload.additional_charges],
@@ -116,12 +137,20 @@ def create_property(db: Session, owner_id: int, payload: PropertyCreate) -> Prop
     for photo in payload.photos:
         db.add(PropertyPhoto(property_id=prop.id, url=photo.url, sort_order=photo.sort_order))
 
+    if payload.vehicle_details is not None:
+        db.add(VehicleDetails(property_id=prop.id, **payload.vehicle_details.model_dump()))
+
+    if payload.good_details is not None:
+        db.add(GoodDetails(property_id=prop.id, **payload.good_details.model_dump()))
+
     db.commit()
     return get_property(db, prop.id)
 
 
 def update_property(db: Session, prop: Property, payload: PropertyUpdate) -> Property:
-    data = payload.model_dump(exclude={"photos", "additional_charges"})
+    data = payload.model_dump(
+        exclude={"photos", "additional_charges", "vehicle_details", "good_details"}
+    )
     for field, value in data.items():
         setattr(prop, field, value)
     prop.additional_charges = [c.model_dump() for c in payload.additional_charges]
@@ -129,6 +158,28 @@ def update_property(db: Session, prop: Property, payload: PropertyUpdate) -> Pro
     db.query(PropertyPhoto).filter(PropertyPhoto.property_id == prop.id).delete()
     for photo in payload.photos:
         db.add(PropertyPhoto(property_id=prop.id, url=photo.url, sort_order=photo.sort_order))
+
+    # Vehicle details — upsert or delete
+    if payload.vehicle_details is not None:
+        existing_vd = db.query(VehicleDetails).filter(VehicleDetails.property_id == prop.id).first()
+        if existing_vd:
+            for k, v in payload.vehicle_details.model_dump().items():
+                setattr(existing_vd, k, v)
+        else:
+            db.add(VehicleDetails(property_id=prop.id, **payload.vehicle_details.model_dump()))
+    else:
+        db.query(VehicleDetails).filter(VehicleDetails.property_id == prop.id).delete()
+
+    # Good details — upsert or delete
+    if payload.good_details is not None:
+        existing_gd = db.query(GoodDetails).filter(GoodDetails.property_id == prop.id).first()
+        if existing_gd:
+            for k, v in payload.good_details.model_dump().items():
+                setattr(existing_gd, k, v)
+        else:
+            db.add(GoodDetails(property_id=prop.id, **payload.good_details.model_dump()))
+    else:
+        db.query(GoodDetails).filter(GoodDetails.property_id == prop.id).delete()
 
     db.commit()
     return get_property(db, prop.id)
@@ -139,6 +190,12 @@ def update_property_status(db: Session, prop: Property, payload: PropertyStatusU
         prop.status = payload.status
     if payload.availability_status is not None:
         prop.availability_status = payload.availability_status
+    db.commit()
+    return get_property(db, prop.id)
+
+
+def set_featured(db: Session, prop: Property, is_featured: bool) -> Property:
+    prop.is_featured = is_featured
     db.commit()
     return get_property(db, prop.id)
 
@@ -169,6 +226,8 @@ def serialize_summary(prop: Property) -> dict:
     return {
         "id": prop.id,
         "title": prop.title,
+        "primary_category_id": prop.primary_category_id,
+        "primary_category_name": prop.primary_category.name,
         "category_id": prop.category_id,
         "category_name": prop.category.name,
         "subtype_id": prop.subtype_id,
@@ -181,6 +240,7 @@ def serialize_summary(prop: Property) -> dict:
         "rental_term": prop.rental_term,
         "status": prop.status,
         "view_count": prop.view_count,
+        "is_featured": prop.is_featured,
         "primary_photo_url": primary_photo,
     }
 
@@ -190,6 +250,8 @@ def serialize_full(prop: Property, *, favorited: bool = False, conversation_coun
         "id": prop.id,
         "owner_id": prop.owner_id,
         "owner_name": prop.owner.name,
+        "primary_category_id": prop.primary_category_id,
+        "primary_category_name": prop.primary_category.name,
         "category_id": prop.category_id,
         "category_name": prop.category.name,
         "subtype_id": prop.subtype_id,
@@ -218,9 +280,12 @@ def serialize_full(prop: Property, *, favorited: bool = False, conversation_coun
         "parking_access": prop.parking_access,
         "status": prop.status,
         "view_count": prop.view_count,
+        "is_featured": prop.is_featured,
         "created_at": prop.created_at,
         "photos": prop.photos,
         "is_favorited": favorited,
+        "vehicle_details": prop.vehicle_details,
+        "good_details": prop.good_details,
     }
     if conversation_count is not None:
         result["conversation_count"] = conversation_count

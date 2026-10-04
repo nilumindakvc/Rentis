@@ -4,11 +4,13 @@ from pydantic import BaseModel
 
 from app.models.enums import (
     AvailabilityStatus,
+    FuelType,
     FurnishingType,
     ListingStatus,
     PropertyCondition,
     RentalTerm,
     SizeUnit,
+    TransmissionType,
 )
 
 
@@ -30,7 +32,39 @@ class PhotoOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class VehicleDetailsIn(BaseModel):
+    make: str
+    model: str
+    year: int | None = None
+    color: str | None = None
+    fuel_type: FuelType | None = None
+    transmission: TransmissionType | None = None
+    mileage_km: int | None = None
+    seats: int | None = None
+    engine_cc: int | None = None
+    has_ac: bool = False
+    has_gps: bool = False
+    driver_included: bool = False
+
+
+class VehicleDetailsOut(VehicleDetailsIn):
+    model_config = {"from_attributes": True}
+
+
+class GoodDetailsIn(BaseModel):
+    brand: str | None = None
+    model_number: str | None = None
+    quantity_available: int = 1
+    returnable: bool = True
+    condition_notes: str | None = None
+
+
+class GoodDetailsOut(GoodDetailsIn):
+    model_config = {"from_attributes": True}
+
+
 class PropertyBase(BaseModel):
+    primary_category_id: int
     category_id: int
     subtype_id: int
     title: str
@@ -66,6 +100,8 @@ class PropertyBase(BaseModel):
 
 class PropertyCreate(PropertyBase):
     photos: list[PhotoIn] = []
+    vehicle_details: VehicleDetailsIn | None = None
+    good_details: GoodDetailsIn | None = None
 
 
 class PropertyUpdate(PropertyCreate):
@@ -80,6 +116,8 @@ class PropertyStatusUpdate(BaseModel):
 class PropertySummaryOut(BaseModel):
     id: int
     title: str
+    primary_category_id: int
+    primary_category_name: str
     category_id: int
     category_name: str
     subtype_id: int
@@ -92,6 +130,7 @@ class PropertySummaryOut(BaseModel):
     rental_term: RentalTerm
     status: ListingStatus
     view_count: int
+    is_featured: bool = False
     primary_photo_url: str | None = None
 
 
@@ -99,6 +138,8 @@ class PropertyOut(BaseModel):
     id: int
     owner_id: int
     owner_name: str
+    primary_category_id: int
+    primary_category_name: str
     category_id: int
     category_name: str
     subtype_id: int
@@ -127,9 +168,12 @@ class PropertyOut(BaseModel):
     parking_access: str | None
     status: ListingStatus
     view_count: int
+    is_featured: bool = False
     created_at: datetime
     photos: list[PhotoOut]
     is_favorited: bool = False
+    vehicle_details: VehicleDetailsOut | None = None
+    good_details: GoodDetailsOut | None = None
 
 
 class OwnerPropertyOut(PropertyOut):

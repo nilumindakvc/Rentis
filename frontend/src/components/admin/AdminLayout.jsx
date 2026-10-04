@@ -19,7 +19,7 @@ export default function AdminLayout({ children }) {
       <Navbar bg="dark" variant="dark" expand="md" className="mb-4">
         <Container>
           <Navbar.Brand as={NavLink} to="/admin">
-            Rentis Admin
+            Rentit Admin
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="admin-nav" />
           <Navbar.Collapse id="admin-nav">
@@ -34,9 +34,14 @@ export default function AdminLayout({ children }) {
                 Listings
               </Nav.Link>
               {admin?.role === 'super_admin' && (
-                <Nav.Link as={NavLink} to="/admin/admins">
-                  Admins
-                </Nav.Link>
+                <>
+                  <Nav.Link as={NavLink} to="/admin/admins">
+                    Admins
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/admin/partners">
+                    Partners
+                  </Nav.Link>
+                </>
               )}
             </Nav>
             <Nav className="align-items-md-center gap-2">

@@ -1,6 +1,8 @@
 from app.models.user import User
-from app.models.taxonomy import PropertyCategory, PropertySubtype
+from app.models.taxonomy import PropertyCategory, PropertyPrimaryCategory, PropertySecondaryCategory, PropertySubtype
 from app.models.property import Property
+from app.models.vehicle_details import VehicleDetails
+from app.models.good_details import GoodDetails
 from app.models.photo import PropertyPhoto
 from app.models.favorite import Favorite
 from app.models.conversation import Conversation
@@ -12,12 +14,17 @@ from app.models.admin_refresh_token import AdminRefreshToken
 from app.models.availability_block import AvailabilityBlock
 from app.models.booking import Booking
 from app.models.review import Review
+from app.models.partner import Partner
 
 __all__ = [
     "User",
+    "PropertyPrimaryCategory",
+    "PropertySecondaryCategory",
     "PropertyCategory",
     "PropertySubtype",
     "Property",
+    "VehicleDetails",
+    "GoodDetails",
     "PropertyPhoto",
     "Favorite",
     "Conversation",
@@ -29,4 +36,5 @@ __all__ = [
     "AvailabilityBlock",
     "Booking",
     "Review",
+    "Partner",
 ]

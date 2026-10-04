@@ -38,6 +38,11 @@ export default function AdminPropertiesPage() {
     setProperties((prev) => prev.map((x) => (x.id === p.id ? updated : x)))
   }
 
+  const handleFeaturedToggle = async (p, isFeatured) => {
+    const updated = await adminPropertiesApi.setFeatured(p.id, isFeatured)
+    setProperties((prev) => prev.map((x) => (x.id === p.id ? updated : x)))
+  }
+
   return (
     <AdminLayout>
       <h1 className="h4 mb-4">Listings</h1>
@@ -66,6 +71,7 @@ export default function AdminPropertiesPage() {
               <th>Price</th>
               <th>Views</th>
               <th>Status</th>
+              <th>Featured</th>
               <th />
             </tr>
           </thead>
@@ -87,6 +93,14 @@ export default function AdminPropertiesPage() {
                   <Badge bg={STATUS_VARIANT[p.status] || 'secondary'} className="text-capitalize">
                     {p.status}
                   </Badge>
+                </td>
+                <td>
+                  <Form.Check
+                    type="switch"
+                    id={`featured-${p.id}`}
+                    checked={!!p.is_featured}
+                    onChange={(e) => handleFeaturedToggle(p, e.target.checked)}
+                  />
                 </td>
                 <td>
                   <Form.Select

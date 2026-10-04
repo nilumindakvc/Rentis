@@ -2,6 +2,7 @@ import ListGroup from 'react-bootstrap/ListGroup'
 import Badge from 'react-bootstrap/Badge'
 import { useAuth } from '../../context/AuthContext'
 import EmptyState from '../common/EmptyState'
+import { avatarColors, initials } from '../../utils/avatar'
 
 function relativeTime(iso) {
   if (!iso) return ''
@@ -23,39 +24,44 @@ export default function ConversationList({ conversations, activeId, onSelect }) 
   }
 
   return (
-    <ListGroup variant="flush">
+    <ListGroup variant="flush" className="conversation-list">
       {conversations.map((c) => {
         const otherName = user?.role === 'owner' ? c.customer_name : c.owner_name
+        const otherId = user?.role === 'owner' ? c.customer_id : c.owner_id
+        const [avatarStart, avatarEnd] = avatarColors(String(otherId ?? otherName))
+        const isActive = c.id === activeId
         return (
           <ListGroup.Item
             key={c.id}
             action
-            active={c.id === activeId}
+            active={isActive}
             onClick={() => onSelect(c.id)}
-            className="py-3"
+            className={`conversation-item${c.unread_count > 0 ? ' is-unread' : ''}`}
           >
-            <div className="d-flex justify-content-between align-items-start gap-2">
-              <div className="text-truncate">
-                <div className="fw-semibold text-truncate">{otherName}</div>
-                <div className="small text-truncate" style={{ opacity: 0.8 }}>
-                  {c.property_title}
+            <div className="d-flex align-items-start gap-2">
+              <div
+                className="conversation-avatar flex-shrink-0"
+                style={{ background: `linear-gradient(135deg, ${avatarStart}, ${avatarEnd})` }}
+              >
+                {initials(otherName)}
+              </div>
+              <div className="flex-grow-1 text-truncate">
+                <div className="d-flex justify-content-between align-items-baseline gap-2">
+                  <span className="conversation-name text-truncate">{otherName}</span>
+                  <span className="conversation-time flex-shrink-0">
+                    {relativeTime(c.last_message_at || c.updated_at)}
+                  </span>
                 </div>
+                <div className="conversation-property text-truncate">{c.property_title}</div>
                 {c.last_message && (
-                  <div className="small text-truncate" style={{ opacity: 0.65, maxWidth: 220 }}>
-                    {c.last_message}
-                  </div>
+                  <div className="conversation-preview text-truncate">{c.last_message}</div>
                 )}
               </div>
-              <div className="text-end flex-shrink-0">
-                <div className="small" style={{ opacity: 0.6 }}>
-                  {relativeTime(c.last_message_at || c.updated_at)}
-                </div>
-                {c.unread_count > 0 && (
-                  <Badge bg="danger" pill className="mt-1">
-                    {c.unread_count}
-                  </Badge>
-                )}
-              </div>
+              {c.unread_count > 0 && (
+                <Badge bg="danger" pill className="conversation-unread-badge flex-shrink-0">
+                  {c.unread_count}
+                </Badge>
+              )}
             </div>
           </ListGroup.Item>
         )

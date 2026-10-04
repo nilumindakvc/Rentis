@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import NavBar from './components/layout/NavBar'
+import Footer from './components/layout/Footer'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute'
 import HomePage from './pages/HomePage'
@@ -7,6 +8,7 @@ import SearchPage from './pages/SearchPage'
 import PropertyDetailPage from './pages/PropertyDetailPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import PricingPage from './pages/PricingPage'
 import OwnerDashboardPage from './pages/OwnerDashboardPage'
 import CustomerDashboardPage from './pages/CustomerDashboardPage'
 import CreateEditListingPage from './pages/CreateEditListingPage'
@@ -18,6 +20,7 @@ import AdminUsersPage from './pages/admin/AdminUsersPage'
 import AdminPropertiesPage from './pages/admin/AdminPropertiesPage'
 import AdminPropertyDetailPage from './pages/admin/AdminPropertyDetailPage'
 import AdminManageAdminsPage from './pages/admin/AdminManageAdminsPage'
+import AdminPartnersPage from './pages/admin/AdminPartnersPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
@@ -27,13 +30,14 @@ export default function App() {
   return (
     <>
       {!isAdminRoute && <NavBar />}
-      <main className={isAdminRoute ? '' : 'pb-5'}>
+      <main className={isAdminRoute ? '' : 'pb-5'} style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/properties/:id" element={<PropertyDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route
             path="/owner/dashboard"
             element={
@@ -124,10 +128,19 @@ export default function App() {
               </AdminProtectedRoute>
             }
           />
+          <Route
+            path="/admin/partners"
+            element={
+              <AdminProtectedRoute superOnly>
+                <AdminPartnersPage />
+              </AdminProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
+      {!isAdminRoute && <Footer />}
     </>
   )
 }

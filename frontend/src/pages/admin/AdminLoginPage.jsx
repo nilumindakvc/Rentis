@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
   return (
     <Container style={{ maxWidth: 420 }} className="mt-5">
       <Card className="p-4 shadow-sm border-dark">
-        <h1 className="h4 mb-1">Rentis Admin</h1>
+        <h1 className="h4 mb-1">Rentit Admin</h1>
         <p className="text-muted small mb-3">Authorized personnel only.</p>
         <ErrorAlert error={error} />
         <Form onSubmit={handleSubmit}>

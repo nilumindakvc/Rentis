@@ -12,6 +12,7 @@ from app.config import settings
 from app.routers import (
     admin_admins,
     admin_auth,
+    admin_partners,
     admin_properties,
     admin_stats,
     admin_users,
@@ -22,6 +23,7 @@ from app.routers import (
     favorites,
     notifications,
     owner_stats,
+    partners,
     payments,
     properties,
     reviews,
@@ -30,7 +32,7 @@ from app.routers import (
     ws,
 )
 
-app = FastAPI(title="Rentis API", version="0.1.0")
+app = FastAPI(title="Rentit API", version="0.1.0")
 
 
 class SPAStaticFiles(StaticFiles):
@@ -63,11 +65,13 @@ app.include_router(notifications.router)
 app.include_router(owner_stats.router)
 app.include_router(payments.router)
 app.include_router(uploads.router)
+app.include_router(partners.router)
 app.include_router(ws.router)
 app.include_router(admin_auth.router)
 app.include_router(admin_admins.router)
 app.include_router(admin_users.router)
 app.include_router(admin_properties.router)
+app.include_router(admin_partners.router)
 app.include_router(admin_stats.router)
 
 

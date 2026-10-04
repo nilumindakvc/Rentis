@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     DateTime,
     Enum,
     ForeignKey,
@@ -29,7 +30,12 @@ class Property(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    category_id: Mapped[int] = mapped_column(ForeignKey("property_categories.id"), nullable=False)
+    primary_category_id: Mapped[int] = mapped_column(
+        ForeignKey("property_primary_categories.id"), nullable=False, index=True
+    )
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("property_secondary_categories.id"), nullable=False
+    )
     subtype_id: Mapped[int] = mapped_column(ForeignKey("property_subtypes.id"), nullable=False)
 
     title: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -80,14 +86,22 @@ class Property(Base):
         server_default=ListingStatus.published.value,
     )
     view_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    is_featured: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     owner = relationship("User", back_populates="properties")
-    category = relationship("PropertyCategory")
+    primary_category = relationship("PropertyPrimaryCategory")
+    category = relationship("PropertySecondaryCategory")
     subtype = relationship("PropertySubtype")
+    vehicle_details = relationship(
+        "VehicleDetails", back_populates="property", uselist=False, cascade="all, delete-orphan"
+    )
+    good_details = relationship(
+        "GoodDetails", back_populates="property", uselist=False, cascade="all, delete-orphan"
+    )
     photos = relationship(
         "PropertyPhoto", back_populates="property", cascade="all, delete-orphan", order_by="PropertyPhoto.sort_order"
     )

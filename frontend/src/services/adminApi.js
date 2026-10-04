@@ -101,10 +101,28 @@ export const adminPropertiesApi = {
     adminClient
       .patch(`/admin/properties/${id}/status`, { status })
       .then((r) => r.data),
+  setFeatured: (id, isFeatured) =>
+    adminClient
+      .patch(`/admin/properties/${id}/featured`, { is_featured: isFeatured })
+      .then((r) => r.data),
   remove: (id) =>
     adminClient.delete(`/admin/properties/${id}`).then((r) => r.data),
 };
 
 export const adminStatsApi = {
   summary: () => adminClient.get("/admin/stats/summary").then((r) => r.data),
+};
+
+export const adminPartnersApi = {
+  list: () => adminClient.get("/admin/partners").then((r) => r.data),
+  create: (payload) =>
+    adminClient.post("/admin/partners", payload).then((r) => r.data),
+  remove: (id) => adminClient.delete(`/admin/partners/${id}`).then((r) => r.data),
+  uploadLogo: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return adminClient
+      .post("/admin/partners/logo", formData)
+      .then((r) => r.data);
+  },
 };

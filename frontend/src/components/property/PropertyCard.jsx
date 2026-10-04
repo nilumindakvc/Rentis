@@ -4,7 +4,7 @@ import Badge from 'react-bootstrap/Badge'
 import { RENTAL_TERM_LABELS } from '../../constants/categoryIcons'
 import FavoriteButton from './FavoriteButton'
 
-const PLACEHOLDER = 'https://placehold.co/400x300?text=Rentis'
+const PLACEHOLDER = 'https://placehold.co/400x300?text=Rentit'
 
 export default function PropertyCard({ property, onFavoriteChange }) {
   const photo = property.primary_photo_url || PLACEHOLDER

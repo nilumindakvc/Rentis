@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -13,12 +13,13 @@ import signupImage from "../assets/rental-hero-homeaway.jpg";
 export default function SignupPage() {
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     phone: "",
-    role: "customer",
+    role: searchParams.get("role") === "owner" ? "owner" : "customer",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
@@ -67,7 +68,7 @@ export default function SignupPage() {
             <p className="login-form__eyebrow">GET STARTED</p>
             <h1 id="signup-heading">Create your account</h1>
             <p className="login-form__intro">
-              Choose how you want to use Rentis.
+              Choose how you want to use Rentit.
             </p>
 
             <ErrorAlert error={error} />

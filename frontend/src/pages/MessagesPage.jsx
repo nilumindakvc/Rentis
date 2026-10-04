@@ -49,11 +49,11 @@ export default function MessagesPage() {
   return (
     <Container>
       <h1 className="h4 mb-4">Messages</h1>
-      <Card>
+      <Card className="messages-card">
         <Row className="g-0">
           <Col
             md={4}
-            className={`border-end ${activeId ? 'd-none d-md-block' : ''}`}
+            className={`messages-sidebar ${activeId ? 'd-none d-md-block' : ''}`}
             style={{ height: PANE_HEIGHT, overflowY: 'auto' }}
           >
             <ConversationList

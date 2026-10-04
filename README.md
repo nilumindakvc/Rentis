@@ -1,4 +1,4 @@
-# Rentis — Stage 1
+# Rentit — Stage 1
 
 Property rental brokerage platform. This is Stage 1: core listings, search/filter, owner and customer accounts, favorites, real-time messaging, notifications, and an admin panel. See [docs/stage1-plan.md](docs/stage1-plan.md), [docs/jwt-auth-plan.md](docs/jwt-auth-plan.md), [docs/messaging-plan.md](docs/messaging-plan.md), and [docs/admin-panel-plan.md](docs/admin-panel-plan.md) for the full build plans.
 
