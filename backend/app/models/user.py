@@ -19,6 +19,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
     stripe_account_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     stripe_payouts_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    stripe_customer_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     properties = relationship("Property", back_populates="owner", cascade="all, delete-orphan")
@@ -26,3 +27,6 @@ class User(Base):
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="customer", cascade="all, delete-orphan")
+    subscription = relationship(
+        "OwnerSubscription", back_populates="owner", uselist=False, cascade="all, delete-orphan"
+    )

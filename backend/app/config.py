@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_publishable_key: str = ""
     stripe_webhook_secret: str = ""
+    stripe_billing_webhook_secret: str = ""
     stripe_platform_country: str = "US"
     frontend_base_url: str = "https://rentis.onrender.com"
 

@@ -7,7 +7,7 @@ from app.config import settings
 from app.crud import bookings as bookings_crud
 from app.crud import payments as payments_crud
 from app.database import get_db
-from app.deps import get_current_owner
+from app.deps import enforce_connect_access, get_current_owner
 from app.models.enums import NotificationType, PaymentStatus
 from app.models.notification import Notification
 from app.models.user import User
@@ -22,6 +22,7 @@ def connect_onboard(
     payload: ConnectOnboardIn,
     db: Session = Depends(get_db),
     owner: User = Depends(get_current_owner),
+    _: None = Depends(enforce_connect_access),
 ):
     account_id = payments_crud.get_or_create_connect_account(db, owner, payload.country)
     return_url = f"{settings.frontend_base_url}/owner/dashboard?tab=payouts"
@@ -30,7 +31,10 @@ def connect_onboard(
 
 
 @router.get("/payments/connect/status", response_model=ConnectStatusOut)
-def connect_status(owner: User = Depends(get_current_owner)):
+def connect_status(
+    owner: User = Depends(get_current_owner),
+    _: None = Depends(enforce_connect_access),
+):
     return {"connected": bool(owner.stripe_account_id), "payouts_enabled": owner.stripe_payouts_enabled}
 
 

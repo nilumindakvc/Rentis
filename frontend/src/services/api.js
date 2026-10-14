@@ -88,6 +88,18 @@ export const partnersApi = {
   list: () => client.get("/partners").then((r) => r.data),
 };
 
+export const plansApi = {
+  list: () => client.get("/plans").then((r) => r.data),
+};
+
+export const subscriptionsApi = {
+  mine: () => client.get("/subscriptions/mine").then((r) => r.data),
+  checkout: (planCode) =>
+    client.post("/subscriptions/checkout", { plan_code: planCode }).then((r) => r.data),
+  portal: () => client.post("/subscriptions/portal").then((r) => r.data),
+  cancel: () => client.post("/subscriptions/cancel").then((r) => r.data),
+};
+
 export const propertiesApi = {
   search: (params) => client.get("/properties", { params }).then((r) => r.data),
   getById: (id) => client.get(`/properties/${id}`).then((r) => r.data),

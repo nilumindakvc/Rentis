@@ -87,6 +87,8 @@ class Property(Base):
     )
     view_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    archived_by_role: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    archived_by_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()

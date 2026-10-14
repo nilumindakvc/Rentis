@@ -96,6 +96,8 @@ export const adminUsersApi = {
 export const adminPropertiesApi = {
   list: (params) =>
     adminClient.get("/admin/properties", { params }).then((r) => r.data),
+  listArchived: () =>
+    adminClient.get("/admin/properties/archived").then((r) => r.data),
   get: (id) => adminClient.get(`/admin/properties/${id}`).then((r) => r.data),
   setStatus: (id, status) =>
     adminClient
@@ -107,10 +109,23 @@ export const adminPropertiesApi = {
       .then((r) => r.data),
   remove: (id) =>
     adminClient.delete(`/admin/properties/${id}`).then((r) => r.data),
+  restore: (id) =>
+    adminClient.post(`/admin/properties/${id}/restore`).then((r) => r.data),
+  permanentDelete: (id) =>
+    adminClient.delete(`/admin/properties/${id}/permanent`).then((r) => r.data),
 };
 
 export const adminStatsApi = {
   summary: () => adminClient.get("/admin/stats/summary").then((r) => r.data),
+};
+
+export const adminPlansApi = {
+  list: () => adminClient.get("/admin/plans").then((r) => r.data),
+  create: (payload) =>
+    adminClient.post("/admin/plans", payload).then((r) => r.data),
+  update: (id, payload) =>
+    adminClient.patch(`/admin/plans/${id}`, payload).then((r) => r.data),
+  remove: (id) => adminClient.delete(`/admin/plans/${id}`).then((r) => r.data),
 };
 
 export const adminPartnersApi = {

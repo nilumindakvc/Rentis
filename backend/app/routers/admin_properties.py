@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.admin_deps import get_current_admin
+from app.admin_deps import get_current_admin, get_current_super_admin
 from app.crud import properties as properties_crud
 from app.database import get_db
 from app.models.admin import Admin
+from app.models.enums import ListingStatus
 from app.schemas.admin import PlatformPropertyOut
 from app.schemas.admin import PropertyFeaturedUpdate as AdminPropertyFeaturedUpdate
 from app.schemas.admin import PropertyStatusUpdate as AdminPropertyStatusUpdate
@@ -28,6 +29,9 @@ def _serialize(prop) -> dict:
         "view_count": prop.view_count,
         "is_featured": prop.is_featured,
         "created_at": prop.created_at,
+        "updated_at": prop.updated_at,
+        "archived_by_role": prop.archived_by_role,
+        "archived_by_name": prop.archived_by_name,
     }
 
 
@@ -50,6 +54,15 @@ def list_properties(
     return [_serialize(p) for p in props]
 
 
+@router.get("/archived", response_model=list[PlatformPropertyOut])
+def list_archived_properties(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(get_current_admin),
+):
+    props = properties_crud.list_archived_for_admin(db)
+    return [_serialize(p) for p in props]
+
+
 @router.get("/{property_id}", response_model=PropertyOut)
 def get_property(
     property_id: int,
@@ -62,8 +75,41 @@ def get_property(
     return properties_crud.serialize_full(prop)
 
 
-@router.delete("/{property_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{property_id}")
 def delete_property(
+    property_id: int,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(get_current_admin),
+):
+    prop = properties_crud.get_property(db, property_id)
+    if prop is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+
+    if prop.status == ListingStatus.archived:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This listing is already archived. Go to Archived Listings to restore or permanently delete it.",
+        )
+
+    refs = properties_crud.has_active_references(db, property_id)
+    if refs["bookings"] > 0 or refs["conversations"] > 0:
+        archived_prop = properties_crud.archive_property(db, prop, by_role="admin", by_name=admin.name)
+        return {
+            "action": "archived",
+            "message": (
+                f"This listing has {refs['bookings']} booking(s) and "
+                f"{refs['conversations']} conversation(s). It has been archived instead of deleted. "
+                "Go to Archived Listings to permanently delete it."
+            ),
+            "property": _serialize(archived_prop),
+        }
+
+    properties_crud.delete_property(db, prop)
+    return {"action": "deleted"}
+
+
+@router.post("/{property_id}/restore", response_model=PlatformPropertyOut)
+def restore_property(
     property_id: int,
     db: Session = Depends(get_db),
     _: Admin = Depends(get_current_admin),
@@ -71,6 +117,29 @@ def delete_property(
     prop = properties_crud.get_property(db, property_id)
     if prop is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+    if prop.status != ListingStatus.archived:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Only archived listings can be restored.",
+        )
+    restored = properties_crud.restore_property(db, prop)
+    return _serialize(restored)
+
+
+@router.delete("/{property_id}/permanent", status_code=status.HTTP_204_NO_CONTENT)
+def permanently_delete_property(
+    property_id: int,
+    db: Session = Depends(get_db),
+    _: Admin = Depends(get_current_super_admin),
+):
+    prop = properties_crud.get_property(db, property_id)
+    if prop is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+    if prop.status != ListingStatus.archived:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Only archived listings can be permanently deleted.",
+        )
     properties_crud.delete_property(db, prop)
 
 

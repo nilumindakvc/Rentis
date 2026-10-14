@@ -15,6 +15,8 @@ from app.models.availability_block import AvailabilityBlock
 from app.models.booking import Booking
 from app.models.review import Review
 from app.models.partner import Partner
+from app.models.plan import Plan
+from app.models.owner_subscription import OwnerSubscription
 
 __all__ = [
     "User",
@@ -37,4 +39,6 @@ __all__ = [
     "Booking",
     "Review",
     "Partner",
+    "Plan",
+    "OwnerSubscription",
 ]

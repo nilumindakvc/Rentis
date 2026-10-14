@@ -1,6 +1,8 @@
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from app.crud import subscriptions as subscriptions_crud
+from app.models.enums import UserRole
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.security import hash_password, verify_password
@@ -21,6 +23,8 @@ def create_user(db: Session, payload: UserCreate) -> User:
     db.add(user)
     db.commit()
     db.refresh(user)
+    if user.role == UserRole.owner:
+        subscriptions_crud.create_default(db, user.id)
     return user
 
 

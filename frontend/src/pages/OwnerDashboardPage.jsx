@@ -10,14 +10,17 @@ import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import ErrorAlert from "../components/common/ErrorAlert";
 import EmptyState from "../components/common/EmptyState";
+import ConfirmModal from "../components/common/ConfirmModal";
 import {
   propertiesApi,
   ownerStatsApi,
   bookingsApi,
   paymentsApi,
+  subscriptionsApi,
 } from "../services/api";
 import { STRIPE_COUNTRIES } from "../constants/stripeCountries";
 
@@ -69,27 +72,147 @@ function PayoutStatusMessage({ tone, symbol, children }) {
   );
 }
 
+const BILLING_STATUS_VARIANT = {
+  free: { bg: "#e9ecef", color: "#495057", label: "Free" },
+  trialing: { bg: "#d1e7dd", color: "#0f5132", label: "Trial" },
+  active: { bg: "#d1e7dd", color: "#0f5132", label: "Active" },
+  past_due: { bg: "#fff3cd", color: "#664d03", label: "Past due" },
+  canceled: { bg: "#f8d7da", color: "#842029", label: "Canceled" },
+};
+
+function BillingStatusPill({ status }) {
+  const cfg = BILLING_STATUS_VARIANT[status] ?? BILLING_STATUS_VARIANT.free;
+  return (
+    <span
+      style={{
+        background: cfg.bg,
+        color: cfg.color,
+        borderRadius: 12,
+        padding: "2px 8px",
+        fontSize: "0.75rem",
+        fontWeight: 600,
+      }}
+    >
+      {cfg.label}
+    </span>
+  );
+}
+
+function GraceDaysRemaining({ graceEndsAt }) {
+  if (!graceEndsAt) return <span>soon</span>;
+  const ms = new Date(graceEndsAt) - Date.now();
+  const days = Math.max(0, Math.ceil(ms / 86400000));
+  return <span>{days} day{days !== 1 ? "s" : ""}</span>;
+}
+
+function ManageBillingLink({ label = "Manage billing →" }) {
+  const [redirecting, setRedirecting] = useState(false);
+  const handleClick = async () => {
+    setRedirecting(true);
+    try {
+      const { url } = await subscriptionsApi.portal();
+      window.location.href = url;
+    } catch {
+      setRedirecting(false);
+    }
+  };
+  return (
+    <Button variant="link" className="p-0 small" onClick={handleClick} disabled={redirecting}>
+      {redirecting ? "Redirecting…" : label}
+    </Button>
+  );
+}
+
 function ListingsTab() {
   const [listings, setListings] = useState([]);
   const [stats, setStats] = useState(null);
+  const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
-    Promise.all([propertiesApi.getMine(), ownerStatsApi.summary()])
-      .then(([l, s]) => {
+    Promise.all([propertiesApi.getMine(), ownerStatsApi.summary(), subscriptionsApi.mine()])
+      .then(([l, s, sub]) => {
         setListings(l);
         setStats(s);
+        setSubscription(sub);
       })
       .catch(setError)
       .finally(() => setLoading(false));
   }, []);
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await propertiesApi.remove(deleteTarget.id);
+      setListings((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (err) {
+      setDeleteError(err);
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorAlert error={error} />;
 
+  const atListingCap =
+    subscription?.plan?.max_active_listings != null &&
+    subscription.active_listings_count >= subscription.plan.max_active_listings;
+
   return (
     <>
+      {subscription && (
+        <>
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <div className="small text-muted d-flex align-items-center gap-2">
+              Plan: <strong>{subscription.plan.name}</strong> — {subscription.active_listings_count}/
+              {subscription.plan.max_active_listings ?? "∞"} active listings
+              <BillingStatusPill status={subscription.billing_status} />
+            </div>
+            <div className="d-flex gap-2 align-items-center">
+              {subscription.billing_status !== "free" && (
+                <ManageBillingLink />
+              )}
+              {atListingCap && (
+                <Link to="/pricing" className="small">
+                  Upgrade plan
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {subscription.billing_status === "past_due" && (
+            <Alert variant="warning" className="mb-3 py-2">
+              <strong>Payment failed</strong> — your access expires in{" "}
+              <GraceDaysRemaining graceEndsAt={subscription.grace_ends_at} />.{" "}
+              <ManageBillingLink label="Fix payment →" />
+            </Alert>
+          )}
+
+          {subscription.billing_status === "canceled" && (
+            <Alert variant="danger" className="mb-3 py-2">
+              Your subscription has been canceled. All your listings have been archived.{" "}
+              <Link to="/pricing">View plans →</Link>
+            </Alert>
+          )}
+
+          {atListingCap && subscription.billing_status !== "canceled" && (
+            <Alert variant="warning" className="mb-3">
+              You've reached your {subscription.plan.name} plan's listing limit.{" "}
+              <Link to="/pricing">Upgrade plan</Link> to add more listings.
+            </Alert>
+          )}
+        </>
+      )}
+
       <Row className="g-3 mb-4">
         <Col xs={6} md={3}>
           <StatTile label="Listings" value={stats?.total_listings} />
@@ -116,7 +239,14 @@ function ListingsTab() {
           }
         />
       ) : (
-        <Table hover responsive className="bg-white">
+        <>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="h5 mb-0">My Listings</h2>
+            <Button as={Link} to="/owner/listings/new" variant="primary" size="sm">
+              Add listing
+            </Button>
+          </div>
+          <Table hover responsive className="bg-white">
           <thead>
             <tr>
               <th>Title</th>
@@ -156,12 +286,40 @@ function ListingsTab() {
                       Availability
                     </Link>
                   )}
+                  {p.status !== "archived" && (
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm p-0 text-danger small"
+                      onClick={() => setDeleteTarget(p)}
+                    >
+                      Delete
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
-        </Table>
+          </Table>
+        </>
       )}
+
+      <ErrorAlert error={deleteError} />
+
+      <ConfirmModal
+        show={!!deleteTarget}
+        title="Delete listing"
+        confirmLabel="Delete"
+        loading={deleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      >
+        <p className="mb-1">
+          Are you sure you want to delete <strong>{deleteTarget?.title}</strong>?
+        </p>
+        <p className="text-muted small mb-0">
+          The listing will be archived and removed from public search. Admin can permanently delete it later.
+        </p>
+      </ConfirmModal>
     </>
   );
 }

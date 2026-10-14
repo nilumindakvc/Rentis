@@ -18,6 +18,10 @@ body {
   background-color: #fff;
 }
 
+.alert .btn-close {
+  font-size: 0.75rem;
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -1583,4 +1587,215 @@ a.global-customers__card:hover {
   .global-customers__arrow {
     display: none;
   }
+}
+
+/* ── Pricing page ─────────────────────────────────────────── */
+.pricing-page {
+  padding: 48px 0 64px;
+}
+.pricing-page__eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rentis-accent);
+}
+.pricing-page__title {
+  margin: 0 0 14px;
+  font-family: "Sora", "Poppins", system-ui, sans-serif;
+  font-size: 2.3rem;
+  font-weight: 800;
+  line-height: 1.15;
+  background: linear-gradient(100deg, var(--rentis-accent) 0%, var(--rentis-accent-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.pricing-page__subtitle {
+  margin: 0 0 36px;
+  color: #5b5563;
+  font-size: 1.05rem;
+  max-width: 560px;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pricing-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px 28px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #ece7ee;
+  box-shadow: 0 10px 30px -22px rgba(31, 27, 36, 0.25);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -20px rgba(31, 27, 36, 0.3);
+}
+.pricing-card--free {
+  border-color: rgba(62, 122, 92, 0.25);
+}
+.pricing-card--pro {
+  border: 2px solid var(--rentis-paid);
+  box-shadow: 0 16px 40px -18px rgba(51, 88, 126, 0.45);
+  transform: scale(1.02);
+}
+.pricing-card--pro:hover {
+  transform: scale(1.02) translateY(-4px);
+}
+.pricing-card--org {
+  border-style: dashed;
+  border-color: rgba(107, 63, 105, 0.3);
+  background: #fbf9fc;
+}
+
+.pricing-card__ribbon {
+  position: absolute;
+  top: -13px;
+  left: 28px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--rentis-paid);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 14px -6px rgba(51, 88, 126, 0.6);
+}
+
+.pricing-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  gap: 10px;
+}
+.pricing-card__name {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #1f1b24;
+}
+.pricing-card__current {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(62, 122, 92, 0.12);
+  color: var(--rentis-free);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.pricing-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 10px 0 4px;
+}
+.pricing-card__price-amount {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #1f1b24;
+}
+.pricing-card__price-period {
+  color: #8a8491;
+  font-size: 0.92rem;
+}
+.pricing-card--free .pricing-card__price-amount {
+  color: var(--rentis-free);
+}
+.pricing-card--pro .pricing-card__price-amount {
+  color: var(--rentis-paid);
+}
+
+.pricing-card__tagline {
+  margin: 0 0 22px;
+  color: #6b6672;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  min-height: 2.7em;
+}
+
+.pricing-card__features {
+  list-style: none;
+  margin: 0 0 26px;
+  padding: 0;
+  flex-grow: 1;
+}
+.pricing-card__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  color: #3c3741;
+}
+.pricing-card__feature-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+}
+.pricing-card__features li.is-included .pricing-card__feature-icon {
+  color: var(--rentis-free);
+}
+.pricing-card--pro .pricing-card__features li.is-included .pricing-card__feature-icon {
+  color: var(--rentis-paid);
+}
+.pricing-card__features li.is-excluded {
+  color: #b3adbb;
+}
+.pricing-card__features li.is-excluded .pricing-card__feature-icon {
+  color: #d8d3de;
+}
+
+.pricing-card__cta {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-weight: 700;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+.pricing-card__cta:disabled {
+  opacity: 0.6;
+}
+.pricing-card--free .pricing-card__cta:not(:disabled) {
+  background: var(--rentis-free);
+  border-color: var(--rentis-free);
+}
+.pricing-card--free .pricing-card__cta:not(:disabled):hover {
+  background: #336b50 !important;
+  border-color: #336b50 !important;
+}
+.pricing-card--pro .pricing-card__cta:not(:disabled) {
+  background: var(--rentis-paid);
+  border-color: var(--rentis-paid);
+  box-shadow: 0 14px 30px -14px rgba(51, 88, 126, 0.6);
+}
+.pricing-card--pro .pricing-card__cta:not(:disabled):hover {
+  background: #2a4a69 !important;
+  border-color: #2a4a69 !important;
+  transform: translateY(-1px);
+}
+.pricing-card--org .pricing-card__cta {
+  background: transparent;
+  border: 1px solid rgba(107, 63, 105, 0.3);
+  color: var(--rentis-accent);
 }

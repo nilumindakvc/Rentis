@@ -2,6 +2,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session, joinedload
 
 from app.crud import availability as availability_crud
+from app.crud import subscriptions as subscriptions_crud
 from app.models.booking import Booking
 from app.models.enums import BookingStatus, PaymentStatus, RentalTerm
 from app.models.property import Property
@@ -33,6 +34,8 @@ def create_booking(db: Session, customer_id: int, payload: BookingCreate) -> Boo
         raise PermissionError(
             "Booking requests are only available for short-term and medium-term listings"
         )
+    if not subscriptions_crud.plan_allows_booking(db, prop.owner_id):
+        raise PermissionError("This owner's current plan does not support booking requests")
     if payload.start_date > payload.end_date:
         raise ValueError("start_date must not be after end_date")
     if availability_crud.overlaps(db, prop.id, payload.start_date, payload.end_date):

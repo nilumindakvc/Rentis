@@ -1,16 +1,21 @@
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, joinedload
 
+from app.models.booking import Booking
 from app.models.conversation import Conversation
+from app.models.enums import ListingStatus
 from app.models.favorite import Favorite
 from app.models.good_details import GoodDetails
+from app.models.notification import Notification
+from app.models.owner_subscription import OwnerSubscription
 from app.models.photo import PropertyPhoto
 from app.models.property import Property
+from app.models.user import User
 from app.models.vehicle_details import VehicleDetails
 from app.schemas.property import PropertyCreate, PropertyStatusUpdate, PropertyUpdate
 
 PROPERTY_RELATIONSHIPS = (
-    joinedload(Property.owner),
+    joinedload(Property.owner).joinedload(User.subscription).joinedload(OwnerSubscription.plan),
     joinedload(Property.primary_category),
     joinedload(Property.category),
     joinedload(Property.subtype),
@@ -106,7 +111,7 @@ def search_properties(
 def get_owner_properties(db: Session, owner_id: int) -> list[tuple[Property, int]]:
     properties = (
         _base_query(db)
-        .filter(Property.owner_id == owner_id)
+        .filter(Property.owner_id == owner_id, Property.status != ListingStatus.archived)
         .order_by(Property.created_at.desc())
         .all()
     )
@@ -200,7 +205,39 @@ def set_featured(db: Session, prop: Property, is_featured: bool) -> Property:
     return get_property(db, prop.id)
 
 
+def has_active_references(db: Session, property_id: int) -> dict:
+    bookings = db.query(func.count(Booking.id)).filter(Booking.property_id == property_id).scalar() or 0
+    conversations = db.query(func.count(Conversation.id)).filter(Conversation.property_id == property_id).scalar() or 0
+    return {"bookings": bookings, "conversations": conversations}
+
+
+def archive_property(db: Session, prop: Property, *, by_role: str, by_name: str) -> Property:
+    prop.status = ListingStatus.archived
+    prop.archived_by_role = by_role
+    prop.archived_by_name = by_name
+    db.commit()
+    return get_property(db, prop.id)
+
+
+def restore_property(db: Session, prop: Property) -> Property:
+    prop.status = ListingStatus.published
+    db.commit()
+    return get_property(db, prop.id)
+
+
+def list_archived_for_admin(db: Session) -> list[Property]:
+    return (
+        _base_query(db)
+        .filter(Property.status == ListingStatus.archived)
+        .order_by(Property.updated_at.desc())
+        .all()
+    )
+
+
 def delete_property(db: Session, prop: Property) -> None:
+    db.query(Notification).filter(Notification.related_property_id == prop.id).update(
+        {"related_property_id": None}, synchronize_session=False
+    )
     db.delete(prop)
     db.commit()
 
@@ -242,6 +279,7 @@ def serialize_summary(prop: Property) -> dict:
         "view_count": prop.view_count,
         "is_featured": prop.is_featured,
         "primary_photo_url": primary_photo,
+        "owner_allows_booking": bool(prop.owner.subscription and prop.owner.subscription.plan.allows_booking),
     }
 
 
@@ -284,6 +322,7 @@ def serialize_full(prop: Property, *, favorited: bool = False, conversation_coun
         "created_at": prop.created_at,
         "photos": prop.photos,
         "is_favorited": favorited,
+        "owner_allows_booking": bool(prop.owner.subscription and prop.owner.subscription.plan.allows_booking),
         "vehicle_details": prop.vehicle_details,
         "good_details": prop.good_details,
     }

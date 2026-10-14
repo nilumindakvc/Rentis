@@ -30,8 +30,11 @@ export default function AdminLayout({ children }) {
               <Nav.Link as={NavLink} to="/admin/users">
                 Users
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/admin/properties">
+              <Nav.Link as={NavLink} to="/admin/properties" end>
                 Listings
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/admin/properties/archived">
+                Archived
               </Nav.Link>
               {admin?.role === 'super_admin' && (
                 <>
@@ -40,6 +43,9 @@ export default function AdminLayout({ children }) {
                   </Nav.Link>
                   <Nav.Link as={NavLink} to="/admin/partners">
                     Partners
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/admin/plans">
+                    Plans
                   </Nav.Link>
                 </>
               )}

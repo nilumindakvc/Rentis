@@ -67,6 +67,9 @@ class PlatformPropertyOut(BaseModel):
     view_count: int
     is_featured: bool = False
     created_at: datetime
+    updated_at: datetime | None = None
+    archived_by_role: str | None = None
+    archived_by_name: str | None = None
 
 
 class PropertyStatusUpdate(BaseModel):
