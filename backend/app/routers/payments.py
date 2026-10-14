@@ -24,9 +24,20 @@ def connect_onboard(
     owner: User = Depends(get_current_owner),
     _: None = Depends(enforce_connect_access),
 ):
-    account_id = payments_crud.get_or_create_connect_account(db, owner, payload.country)
-    return_url = f"{settings.frontend_base_url}/owner/dashboard?tab=payouts"
-    url = payments_crud.create_account_link(account_id, return_url=return_url, refresh_url=return_url)
+    try:
+        account_id = payments_crud.get_or_create_connect_account(db, owner, payload.country)
+        return_url = f"{settings.frontend_base_url}/owner/dashboard?tab=payouts"
+        url = payments_crud.create_account_link(account_id, return_url=return_url, refresh_url=return_url)
+    except stripe.InvalidRequestError as exc:
+        message = str(exc)
+        if "recipient" in message and "ToS agreement" in message:
+            detail = (
+                f"Stripe payouts aren't available for owners in {payload.country} yet. "
+                "This country isn't currently supported for cross-border payouts on our platform."
+            )
+        else:
+            detail = "We couldn't set up Stripe payouts for this account. Please try again or contact support."
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
     return {"url": url}
 
 

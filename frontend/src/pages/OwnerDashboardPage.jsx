@@ -426,6 +426,7 @@ function PayoutsTab() {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [connectError, setConnectError] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [country, setCountry] = useState("LK");
   const [pollAttempts, setPollAttempts] = useState(0);
@@ -478,12 +479,12 @@ function PayoutsTab() {
 
   const handleConnect = async () => {
     setConnecting(true);
-    setError(null);
+    setConnectError(null);
     try {
       const { url } = await paymentsApi.connectOnboard(country);
       window.location.href = url;
     } catch (err) {
-      setError(err);
+      setConnectError(err);
       setConnecting(false);
     }
   };
@@ -536,6 +537,7 @@ function PayoutsTab() {
             </Form.Group>
           </>
         )}
+        <ErrorAlert error={connectError} onClose={() => setConnectError(null)} className="mb-3" />
         <div className="d-flex gap-2">
           <Button
             variant="primary"
