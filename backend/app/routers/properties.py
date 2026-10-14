@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from app.crud import properties as properties_crud
 from app.crud import reviews as reviews_crud
 from app.database import get_db
-from app.deps import get_current_owner, get_optional_user
-from app.models.enums import RentalTerm
+from app.deps import enforce_listing_quota, get_current_owner, get_optional_user
+from app.models.enums import ListingStatus, RentalTerm
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
 from app.schemas.property import (
@@ -119,6 +119,7 @@ def create_property(
     payload: PropertyCreate,
     db: Session = Depends(get_db),
     owner: User = Depends(get_current_owner),
+    _: None = Depends(enforce_listing_quota),
 ):
     prop = properties_crud.create_property(db, owner.id, payload)
     return properties_crud.serialize_full(prop)
@@ -161,11 +162,17 @@ def update_property_status(
     return properties_crud.serialize_full(prop)
 
 
-@router.delete("/{property_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{property_id}")
 def delete_property(
     property_id: int,
     db: Session = Depends(get_db),
     owner: User = Depends(get_current_owner),
 ):
     prop = _get_owned_property(db, property_id, owner)
-    properties_crud.delete_property(db, prop)
+    if prop.status == ListingStatus.archived:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This listing is already archived.",
+        )
+    properties_crud.archive_property(db, prop, by_role="owner", by_name=owner.name)
+    return {"action": "archived", "message": "Your listing has been archived and is no longer visible to renters."}

@@ -19,7 +19,7 @@ const CALENDAR_RENTAL_TERMS = ["medium_term", "short_term"];
 export default function GoodDetailView({ property, showFavorite = true, actions }) {
   const { user } = useAuth();
   const showCalendar = CALENDAR_RENTAL_TERMS.includes(property.rental_term);
-  const canBook = showCalendar && user?.role === "customer";
+  const canBook = showCalendar && user?.role === "customer" && property.owner_allows_booking;
   const [blocks, setBlocks] = useState([]);
   const gd = property.good_details;
 

@@ -13,6 +13,7 @@ from app.routers import (
     admin_admins,
     admin_auth,
     admin_partners,
+    admin_plans,
     admin_properties,
     admin_stats,
     admin_users,
@@ -25,10 +26,13 @@ from app.routers import (
     owner_stats,
     partners,
     payments,
+    plans,
     properties,
     reviews,
+    subscriptions,
     taxonomy,
     uploads,
+    webhooks,
     ws,
 )
 
@@ -66,12 +70,16 @@ app.include_router(owner_stats.router)
 app.include_router(payments.router)
 app.include_router(uploads.router)
 app.include_router(partners.router)
+app.include_router(plans.router)
+app.include_router(subscriptions.router)
+app.include_router(webhooks.router)
 app.include_router(ws.router)
 app.include_router(admin_auth.router)
 app.include_router(admin_admins.router)
 app.include_router(admin_users.router)
 app.include_router(admin_properties.router)
 app.include_router(admin_partners.router)
+app.include_router(admin_plans.router)
 app.include_router(admin_stats.router)
 
 

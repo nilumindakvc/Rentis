@@ -18,9 +18,11 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import AdminPropertiesPage from './pages/admin/AdminPropertiesPage'
+import AdminArchivedPropertiesPage from './pages/admin/AdminArchivedPropertiesPage'
 import AdminPropertyDetailPage from './pages/admin/AdminPropertyDetailPage'
 import AdminManageAdminsPage from './pages/admin/AdminManageAdminsPage'
 import AdminPartnersPage from './pages/admin/AdminPartnersPage'
+import AdminPlansPage from './pages/admin/AdminPlansPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
@@ -113,6 +115,14 @@ export default function App() {
             }
           />
           <Route
+            path="/admin/properties/archived"
+            element={
+              <AdminProtectedRoute>
+                <AdminArchivedPropertiesPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
             path="/admin/properties/:id"
             element={
               <AdminProtectedRoute>
@@ -133,6 +143,14 @@ export default function App() {
             element={
               <AdminProtectedRoute superOnly>
                 <AdminPartnersPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/plans"
+            element={
+              <AdminProtectedRoute superOnly>
+                <AdminPlansPage />
               </AdminProtectedRoute>
             }
           />

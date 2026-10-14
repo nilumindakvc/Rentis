@@ -10,6 +10,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import MapView from '../components/property/MapView'
 import ErrorAlert from '../components/common/ErrorAlert'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import ConfirmModal from '../components/common/ConfirmModal'
 import { propertiesApi, taxonomyApi, uploadsApi } from '../services/api'
 
 const CONDITIONS = ['new', 'good', 'renovated', 'needs_work']
@@ -76,6 +77,7 @@ export default function CreateEditListingPage() {
   const [loading, setLoading] = useState(isEdit)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
+  const [quotaError, setQuotaError] = useState(null)
 
   useEffect(() => {
     taxonomyApi.getPrimaryCategories()
@@ -215,7 +217,11 @@ export default function CreateEditListingPage() {
         navigate(`/properties/${created.id}`)
       }
     } catch (err) {
-      setError(err)
+      if (err?.response?.status === 403) {
+        setQuotaError(err?.response?.data?.detail || 'You have reached your listing limit.')
+      } else {
+        setError(err)
+      }
     } finally {
       setSaving(false)
     }
@@ -704,6 +710,20 @@ export default function CreateEditListingPage() {
           </Button>
         </div>
       </Form>
+
+      <ConfirmModal
+        show={!!quotaError}
+        title="Listing limit reached"
+        confirmLabel="Upgrade plan"
+        confirmVariant="primary"
+        onConfirm={() => navigate('/pricing')}
+        onCancel={() => setQuotaError(null)}
+      >
+        <p className="mb-1">{quotaError}</p>
+        <p className="text-muted small mb-0">
+          Upgrade to Pro to add more listings, or archive an existing listing to free up a slot.
+        </p>
+      </ConfirmModal>
     </Container>
   )
 }

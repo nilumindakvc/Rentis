@@ -132,6 +132,7 @@ class PropertySummaryOut(BaseModel):
     view_count: int
     is_featured: bool = False
     primary_photo_url: str | None = None
+    owner_allows_booking: bool = False
 
 
 class PropertyOut(BaseModel):
@@ -172,6 +173,7 @@ class PropertyOut(BaseModel):
     created_at: datetime
     photos: list[PhotoOut]
     is_favorited: bool = False
+    owner_allows_booking: bool = False
     vehicle_details: VehicleDetailsOut | None = None
     good_details: GoodDetailsOut | None = None
 
