@@ -1,74 +1,76 @@
-# Render Blueprint — three services:
-#   1. rentis-user    static site, serves frontend/dist/index.html  (public site)
-#   2. rentis-admin   static site, serves frontend/dist/admin.html  (admin console)
-#   3. rentis-backend docker web service, FastAPI backend
-#
-# The two static sites build from the same frontend/ project (Vite multi-page
-# build produces both index.html and admin.html in frontend/dist), each one
-# just rewrites unmatched routes to its own entry HTML file.
-#
-# If you rename a service below, or attach a custom domain, update the
-# matching URLs in the envVars of the other services to match.
-
-services:
-  - type: web
-    name: rentis-backend
-    runtime: docker
-    plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: .
-    envVars:
-      - key: DATABASE_URL
-        sync: false
-      - key: APP_ENV
-        value: production
-      - key: CORS_ORIGINS
-        value: https://rentis-user.onrender.com,https://rentis-admin.onrender.com
-      - key: JWT_SECRET_KEY
-        generateValue: true
-      - key: JWT_ALGORITHM
-        value: HS256
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
+# Exported from Render on 2026-11-01T14:43:49Z
+version: "1"
+projects:
+- name: rentis
+  environments:
+  - name: Production
+    services:
+    - type: web
+      name: rentis-backend
+      runtime: docker
+      repo: https://github.com/nilumindakvc/Rentis
+      branch: stripe-billing
+      plan: free
+      envVars:
+      - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_PUBLISHABLE_KEY
         sync: false
-      - key: STRIPE_WEBHOOK_SECRET
+      - key: STRIPE_PLATFORM_COUNTRY
         sync: false
       - key: STRIPE_BILLING_WEBHOOK_SECRET
         sync: false
-      - key: STRIPE_PLATFORM_COUNTRY
-        value: US
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: JWT_ALGORITHM
+        sync: false
       - key: FRONTEND_BASE_URL
-        value: https://rentis-user.onrender.com
-
-  - type: web
-    name: rentis-user
-    runtime: static
-    buildCommand: cd frontend && npm ci && npm run build
-    staticPublishPath: ./frontend/dist
-    envVars:
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: APP_ENV
+        sync: false
+      region: oregon
+      dockerContext: .
+      dockerfilePath: ./backend/Dockerfile
+      autoDeployTrigger: commit
+    - type: web
+      name: rentis-admin
+      runtime: static
+      repo: https://github.com/nilumindakvc/Rentis
+      branch: stripe-billing
+      envVars:
       - key: VITE_API_BASE_URL
-        value: https://rentis-backend.onrender.com
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-
-  - type: web
-    name: rentis-admin
-    runtime: static
-    buildCommand: cd frontend && npm ci && npm run build
-    staticPublishPath: ./frontend/dist
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://rentis-backend.onrender.com
-    routes:
+        sync: false
+      buildCommand: cd frontend && npm ci && npm run build
+      staticPublishPath: ./frontend/dist
+      routes:
       - type: rewrite
         source: /*
         destination: /admin.html
+      autoDeployTrigger: commit
+    - type: web
+      name: rentis-user
+      runtime: static
+      repo: https://github.com/nilumindakvc/Rentis
+      branch: stripe-billing
+      envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+      buildCommand: cd frontend && npm ci && npm run build
+      staticPublishPath: ./frontend/dist
+      routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+      autoDeployTrigger: commit
