@@ -78,7 +78,7 @@ export default function AdminArchivedPropertiesPage() {
     <AdminLayout>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h4 mb-0">Archived Listings</h1>
-        <Link to="/admin/properties" className="btn btn-outline-secondary btn-sm">
+        <Link to="/properties" className="btn btn-outline-secondary btn-sm">
           ← All Listings
         </Link>
       </div>
@@ -112,7 +112,7 @@ export default function AdminArchivedPropertiesPage() {
             {properties.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <Link to={`/admin/properties/${p.id}`}>{p.title}</Link>
+                  <Link to={`/properties/${p.id}`}>{p.title}</Link>
                 </td>
                 <td>{p.owner_name}</td>
                 <td>

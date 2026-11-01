@@ -15,9 +15,9 @@ import NotFoundPage from './pages/NotFoundPage'
 export default function App() {
   return (
     <Routes>
-      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/login" element={<AdminLoginPage />} />
       <Route
-        path="/admin"
+        path="/"
         element={
           <AdminProtectedRoute>
             <AdminDashboardPage />
@@ -25,7 +25,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/users"
+        path="/users"
         element={
           <AdminProtectedRoute>
             <AdminUsersPage />
@@ -33,7 +33,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/properties"
+        path="/properties"
         element={
           <AdminProtectedRoute>
             <AdminPropertiesPage />
@@ -41,7 +41,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/properties/archived"
+        path="/properties/archived"
         element={
           <AdminProtectedRoute>
             <AdminArchivedPropertiesPage />
@@ -49,7 +49,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/properties/:id"
+        path="/properties/:id"
         element={
           <AdminProtectedRoute>
             <AdminPropertyDetailPage />
@@ -57,7 +57,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/admins"
+        path="/admins"
         element={
           <AdminProtectedRoute superOnly>
             <AdminManageAdminsPage />
@@ -65,7 +65,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/partners"
+        path="/partners"
         element={
           <AdminProtectedRoute superOnly>
             <AdminPartnersPage />
@@ -73,7 +73,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/plans"
+        path="/plans"
         element={
           <AdminProtectedRoute superOnly>
             <AdminPlansPage />
@@ -81,7 +81,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/taxonomy"
+        path="/taxonomy"
         element={
           <AdminProtectedRoute superOnly>
             <AdminTaxonomyPage />

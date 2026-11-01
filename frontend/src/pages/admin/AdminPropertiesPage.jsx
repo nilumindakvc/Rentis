@@ -79,7 +79,7 @@ export default function AdminPropertiesPage() {
             {properties.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <Link to={`/admin/properties/${p.id}`}>{p.title}</Link>
+                  <Link to={`/properties/${p.id}`}>{p.title}</Link>
                 </td>
                 <td>{p.owner_name}</td>
                 <td>

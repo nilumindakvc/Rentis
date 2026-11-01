@@ -11,43 +11,43 @@ export default function AdminLayout({ children }) {
 
   const handleLogout = () => {
     logout()
-    navigate('/admin/login')
+    navigate('/login')
   }
 
   return (
     <>
       <Navbar bg="dark" variant="dark" expand="md" className="mb-4">
         <Container>
-          <Navbar.Brand as={NavLink} to="/admin">
+          <Navbar.Brand as={NavLink} to="/">
             Rentit Admin
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="admin-nav" />
           <Navbar.Collapse id="admin-nav">
             <Nav className="me-auto">
-              <Nav.Link as={NavLink} to="/admin" end>
+              <Nav.Link as={NavLink} to="/" end>
                 Dashboard
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/admin/users">
+              <Nav.Link as={NavLink} to="/users">
                 Users
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/admin/properties" end>
+              <Nav.Link as={NavLink} to="/properties" end>
                 Listings
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/admin/properties/archived">
+              <Nav.Link as={NavLink} to="/properties/archived">
                 Archived
               </Nav.Link>
               {admin?.role === 'super_admin' && (
                 <>
-                  <Nav.Link as={NavLink} to="/admin/admins">
+                  <Nav.Link as={NavLink} to="/admins">
                     Admins
                   </Nav.Link>
-                  <Nav.Link as={NavLink} to="/admin/partners">
+                  <Nav.Link as={NavLink} to="/partners">
                     Partners
                   </Nav.Link>
-                  <Nav.Link as={NavLink} to="/admin/plans">
+                  <Nav.Link as={NavLink} to="/plans">
                     Plans
                   </Nav.Link>
-                  <Nav.Link as={NavLink} to="/admin/taxonomy">
+                  <Nav.Link as={NavLink} to="/taxonomy">
                     Taxonomy
                   </Nav.Link>
                 </>

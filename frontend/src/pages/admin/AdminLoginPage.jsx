@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
     setError(null)
     try {
       await login(email, password)
-      navigate('/admin', { replace: true })
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err)
     } finally {

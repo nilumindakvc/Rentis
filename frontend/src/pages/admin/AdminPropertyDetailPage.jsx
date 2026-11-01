@@ -51,7 +51,7 @@ export default function AdminPropertyDetailPage() {
         setProperty((prev) => ({ ...prev, status: 'archived' }))
         setArchivedNotice(result.message)
       } else {
-        navigate('/admin/properties')
+        navigate('/properties')
       }
     } catch (err) {
       setShowDeleteModal(false)
@@ -63,7 +63,7 @@ export default function AdminPropertyDetailPage() {
 
   return (
     <AdminLayout>
-      <Button variant="link" className="ps-0 mb-3" onClick={() => navigate('/admin/properties')}>
+      <Button variant="link" className="ps-0 mb-3" onClick={() => navigate('/properties')}>
         ← Back to listings
       </Button>
 
@@ -89,7 +89,7 @@ export default function AdminPropertyDetailPage() {
                 {archivedNotice && (
                   <Alert variant="warning" className="mb-3">
                     {archivedNotice}{' '}
-                    <Link to="/admin/properties/archived">View Archived Listings →</Link>
+                    <Link to="/properties/archived">View Archived Listings →</Link>
                   </Alert>
                 )}
 
@@ -107,7 +107,7 @@ export default function AdminPropertyDetailPage() {
                 {property.status === 'archived' && (
                   <div className="text-muted small mt-2 text-center">
                     This listing is archived.{' '}
-                    <Link to="/admin/properties/archived">Manage in Archived Listings</Link>
+                    <Link to="/properties/archived">Manage in Archived Listings</Link>
                   </div>
                 )}
               </>
