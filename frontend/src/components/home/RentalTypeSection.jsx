@@ -1,3 +1,4 @@
+import "./RentalTypeSection.css";
 import { Link } from "react-router-dom";
 import PropertyGrid from "../property/PropertyGrid";
 import LoadingSpinner from "../common/LoadingSpinner";

@@ -1,3 +1,4 @@
+import './AvailabilityCalendar.css'
 import { DayPicker } from 'react-day-picker'
 
 function toBlockedRanges(blocks) {

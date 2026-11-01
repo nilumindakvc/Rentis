@@ -1,3 +1,5 @@
+import "./LoginPage.css";
+import "./SignupPage.css";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Container from "react-bootstrap/Container";

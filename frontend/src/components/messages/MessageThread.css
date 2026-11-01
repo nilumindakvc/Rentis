@@ -1,0 +1,106 @@
+.chat-pane {
+  background: #fff;
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0edf0;
+}
+.chat-header-avatar {
+  width: 38px;
+  height: 38px;
+  font-size: 0.78rem;
+}
+.chat-scroll {
+  background: #fbf9fb;
+}
+.chat-day-separator {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 10px;
+}
+.chat-day-separator span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #8a8690;
+  background: #efe9ee;
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+.chat-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e4dde3;
+  color: #6b3f69;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+.chat-bubble {
+  max-width: 75%;
+  padding: 0.55rem 0.85rem;
+  border-radius: 1.1rem;
+  box-shadow: 0 2px 6px rgba(17, 10, 17, 0.06);
+  line-height: 1.4;
+}
+.chat-bubble-mine {
+  background: linear-gradient(135deg, var(--rentis-accent), var(--rentis-accent-dark));
+  color: #fff;
+  border-bottom-right-radius: 0.3rem;
+}
+.chat-bubble-theirs {
+  background-color: #fff;
+  color: #212529;
+  border-bottom-left-radius: 0.3rem;
+}
+.chat-bubble-time {
+  font-size: 0.68rem;
+  opacity: 0.7;
+  margin-top: 0.2rem;
+  text-align: right;
+}
+.chat-composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0edf0;
+  background: #fff;
+}
+.chat-composer-input {
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+  background: #f3f0f3 !important;
+  border: 1px solid transparent !important;
+}
+.chat-composer-input:focus {
+  background: #fff !important;
+  border-color: var(--rentis-accent) !important;
+  box-shadow: 0 0 0 3px rgba(107, 63, 105, 0.12) !important;
+}
+.chat-composer-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rentis-accent), var(--rentis-accent-dark));
+  color: #fff;
+  cursor: pointer;
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+.chat-composer-send:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.04);
+}
+.chat-composer-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

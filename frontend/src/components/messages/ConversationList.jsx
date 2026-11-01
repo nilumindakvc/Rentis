@@ -1,3 +1,4 @@
+import './ConversationList.css'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Badge from 'react-bootstrap/Badge'
 import { useAuth } from '../../context/AuthContext'

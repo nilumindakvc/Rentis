@@ -1,3 +1,4 @@
+import './MessagesPage.css'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Container from 'react-bootstrap/Container'

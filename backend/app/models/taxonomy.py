@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -27,6 +27,9 @@ class PropertySecondaryCategory(Base):
     )
     name: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+    home_page_visibility: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="true"
+    )
 
     primary_category = relationship("PropertyPrimaryCategory", back_populates="secondary_categories")
     subtypes = relationship(

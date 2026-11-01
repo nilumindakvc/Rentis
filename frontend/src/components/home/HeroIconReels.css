@@ -1,0 +1,51 @@
+@keyframes home-hero-icon-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.75) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.home-hero__icon-badge {
+  position: absolute;
+  z-index: 2;
+  top: 44px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.home-hero__icon-tile {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 10px 30px -16px rgba(31, 27, 36, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  color: #1f1b24;
+  overflow: hidden;
+}
+.home-hero__icon-tile-inner {
+  display: flex;
+  animation: home-hero-icon-pop 320ms ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__icon-tile-inner {
+    animation: none;
+  }
+}
+@media (max-width: 600px) {
+  .home-hero__icon-badge {
+    display: none;
+  }
+}

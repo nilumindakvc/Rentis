@@ -1,3 +1,4 @@
+import "./RentalTermSection.css";
 import { Link } from "react-router-dom";
 import PropertyGrid from "../property/PropertyGrid";
 import LoadingSpinner from "../common/LoadingSpinner";
@@ -34,7 +35,7 @@ export default function RentalTermSection({
           {subtypes.map((s) => (
             <Link
               key={s.id}
-              to={`/search?rental_term=${rentalTerm}&category_id=${s.category_id}&subtype_id=${s.id}`}
+              to={s.href || `/search?rental_term=${rentalTerm}&category_id=${s.category_id}&subtype_id=${s.id}`}
               className="badge rounded-pill text-bg-light border text-decoration-none px-3 py-2 fw-normal"
             >
               {s.name}

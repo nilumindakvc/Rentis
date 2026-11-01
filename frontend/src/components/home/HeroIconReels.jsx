@@ -1,3 +1,4 @@
+import "./HeroIconReels.css";
 import { useEffect, useRef, useState } from "react";
 
 // Three tiles, each stepping through the icon set in order — no spinning,

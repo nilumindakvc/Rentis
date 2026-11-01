@@ -47,6 +47,9 @@ export default function AdminLayout({ children }) {
                   <Nav.Link as={NavLink} to="/admin/plans">
                     Plans
                   </Nav.Link>
+                  <Nav.Link as={NavLink} to="/admin/taxonomy">
+                    Taxonomy
+                  </Nav.Link>
                 </>
               )}
             </Nav>

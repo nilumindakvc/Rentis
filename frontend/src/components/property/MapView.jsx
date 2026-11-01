@@ -1,3 +1,4 @@
+import './MapView.css'
 import { useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'

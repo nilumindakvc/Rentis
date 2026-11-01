@@ -1,3 +1,4 @@
+import "./GlobalCustomersSection.css";
 import { useEffect, useState } from "react";
 
 const PAGE_SIZE = 3;

@@ -1,0 +1,104 @@
+.signup-page .login-layout {
+  grid-template-columns: 0.92fr 1fr;
+}
+.signup-page .login-form-panel {
+  padding: 32px 40px;
+}
+.signup-form-inner {
+  max-width: 430px;
+}
+.signup-form-inner h1 {
+  font-size: 1.85rem;
+}
+.signup-form-inner .login-form__intro {
+  margin-bottom: 22px;
+}
+.signup-role-picker {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.signup-role-picker .btn {
+  display: flex;
+  min-height: 68px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px 12px;
+  border: 1px solid #d8d4d2;
+  border-radius: 6px !important;
+  color: #4f494a;
+  text-align: left;
+  white-space: normal;
+}
+.signup-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.signup-fields-grid .form-group {
+  min-width: 0;
+  margin-bottom: 0 !important;
+}
+.signup-form-inner .form-group {
+  margin-bottom: 10px !important;
+}
+.signup-form-inner .form-group.mb-4 {
+  margin-bottom: 14px !important;
+}
+.signup-form-inner .form-control {
+  min-height: 42px;
+}
+.signup-role-picker .btn-check:checked + .btn {
+  border-color: var(--rentis-accent);
+  background: #f5eef4;
+  color: var(--rentis-accent-dark);
+}
+.signup-role-picker .btn-check:focus-visible + .btn {
+  box-shadow: 0 0 0 0.2rem rgba(107, 63, 105, 0.2);
+}
+.signup-role-choice__title {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.signup-role-choice__description {
+  margin-top: 4px;
+  color: #6c6567;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+.signup-role-picker .btn-check:checked + .btn .signup-role-choice__description {
+  color: var(--rentis-accent-dark);
+}
+.signup-optional {
+  margin-left: 4px;
+  color: #777071;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .signup-page .login-layout {
+    grid-template-columns: 1fr;
+  }
+  .signup-form-inner h1 {
+    font-size: 1.7rem;
+  }
+  .signup-role-picker {
+    gap: 8px;
+  }
+  .signup-role-picker .btn {
+    padding: 9px;
+  }
+  .signup-page .login-form-panel {
+    padding: 32px 24px 36px;
+  }
+}
+
+@media (max-width: 380px) {
+  .signup-fields-grid {
+    grid-template-columns: 1fr;
+  }
+}

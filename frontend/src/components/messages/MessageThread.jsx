@@ -1,3 +1,4 @@
+import './MessageThread.css'
 import { useEffect, useRef, useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import { useAuth } from '../../context/AuthContext'

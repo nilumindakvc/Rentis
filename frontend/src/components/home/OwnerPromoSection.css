@@ -1,0 +1,154 @@
+@keyframes home-hero-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+.owner-promo {
+  width: 100%;
+  padding: 56px 0;
+  background: #fff;
+  color: #1f1b24;
+}
+.owner-promo__copy {
+  width: 100%;
+}
+.owner-promo__eyebrow {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #a855f7;
+}
+.owner-promo__title {
+  margin: 0 0 18px;
+  font-family: "Sora", "Poppins", system-ui, sans-serif;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.12;
+  background: linear-gradient(100deg, #a855f7 0%, #ec4899 50%, #a855f7 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: home-hero-shimmer 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .owner-promo__title {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
+.owner-promo__description {
+  margin: 0 0 24px;
+  color: #5b5563;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 580px;
+}
+.owner-promo__benefits {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.owner-promo__benefit-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 22px;
+  border-radius: 16px;
+  background: #fbf9fc;
+  border: 1px solid #ece7ee;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.owner-promo__benefit-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 16px 30px -20px rgba(31, 27, 36, 0.25);
+}
+.owner-promo__benefit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+}
+.owner-promo__benefit-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f1b24;
+}
+.owner-promo__benefit-detail {
+  font-size: 0.88rem;
+  color: #6b6672;
+  line-height: 1.4;
+}
+
+@media (min-width: 900px) {
+  .owner-promo__benefits {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.owner-promo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.owner-promo__cta {
+  padding: 14px 30px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(100deg, #22c55e, #4ade80);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.05rem;
+  box-shadow: 0 16px 34px -12px rgba(34, 197, 94, 0.6);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.owner-promo__cta:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -12px rgba(74, 222, 128, 0.7);
+}
+.owner-promo__secondary-cta {
+  padding: 14px 30px;
+  border: 1px solid rgba(31, 27, 36, 0.15);
+  border-radius: 999px;
+  background: transparent;
+  color: #1f1b24;
+  font-weight: 600;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.owner-promo__secondary-cta:hover {
+  background: #f7f5f8;
+  border-color: rgba(31, 27, 36, 0.25);
+  color: #1f1b24;
+}
+
+@media (max-width: 600px) {
+  .owner-promo {
+    padding: 32px 0;
+  }
+  .owner-promo__title {
+    font-size: 1.8rem;
+  }
+  .owner-promo__benefits {
+    grid-template-columns: 1fr;
+  }
+}

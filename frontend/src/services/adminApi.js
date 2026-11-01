@@ -128,6 +128,19 @@ export const adminPlansApi = {
   remove: (id) => adminClient.delete(`/admin/plans/${id}`).then((r) => r.data),
 };
 
+export const adminTaxonomyApi = {
+  listPrimary: () =>
+    adminClient.get("/admin/taxonomy/primary-categories").then((r) => r.data),
+  createPrimary: (payload) =>
+    adminClient.post("/admin/taxonomy/primary-categories", payload).then((r) => r.data),
+  createCategory: (payload) =>
+    adminClient.post("/admin/taxonomy/categories", payload).then((r) => r.data),
+  updateCategory: (id, payload) =>
+    adminClient.patch(`/admin/taxonomy/categories/${id}`, payload).then((r) => r.data),
+  createSubtype: (payload) =>
+    adminClient.post("/admin/taxonomy/subtypes", payload).then((r) => r.data),
+};
+
 export const adminPartnersApi = {
   list: () => adminClient.get("/admin/partners").then((r) => r.data),
   create: (payload) =>

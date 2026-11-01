@@ -1,0 +1,10 @@
+.rdp-root {
+  --rdp-accent-color: var(--rentis-accent);
+  --rdp-accent-background-color: #f0e5ef;
+  --rdp-disabled-opacity: 1;
+}
+.rdp-disabled:not(.rdp-selected) {
+  background-color: #fbe3e2;
+  color: #b13a34;
+  border-radius: 6px;
+}

@@ -1,0 +1,12 @@
+.property-card {
+  height: 100%;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.property-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+.property-card img {
+  object-fit: cover;
+  height: 170px;
+}

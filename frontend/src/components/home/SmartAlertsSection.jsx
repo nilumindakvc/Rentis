@@ -1,3 +1,5 @@
+import "./SmartAlertsSection.css";
+
 const STEPS = [
   {
     key: "interests",

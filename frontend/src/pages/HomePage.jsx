@@ -1,3 +1,4 @@
+import "./HomePage.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
@@ -10,11 +11,7 @@ import HeroIconReels from "../components/home/HeroIconReels";
 import OwnerPromoSection from "../components/home/OwnerPromoSection";
 import SmartAlertsSection from "../components/home/SmartAlertsSection";
 import { RENTAL_SECTIONS } from "../constants/rentalSections";
-import {
-  RENTAL_TYPE_HIGHLIGHTS,
-  VEHICLE_HIGHLIGHTS,
-  GOOD_HIGHLIGHTS,
-} from "../constants/rentalTypeHighlights";
+import { RENTAL_TYPE_HIGHLIGHTS } from "../constants/rentalTypeHighlights";
 
 const HERO_SLIDES = [
   {
@@ -175,12 +172,8 @@ export default function HomePage() {
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [featuredLoading, setFeaturedLoading] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [vehicleProperties, setVehicleProperties] = useState([]);
-  const [vehicleCarouselSlides, setVehicleCarouselSlides] = useState([]);
-  const [vehicleLoading, setVehicleLoading] = useState(true);
-  const [goodProperties, setGoodProperties] = useState([]);
-  const [goodCarouselSlides, setGoodCarouselSlides] = useState([]);
-  const [goodLoading, setGoodLoading] = useState(true);
+  const [categorySectionProperties, setCategorySectionProperties] = useState({});
+  const [categorySectionLoading, setCategorySectionLoading] = useState(true);
   const [primaryCategoryIds, setPrimaryCategoryIds] = useState({ place: null, vehicle: null, good: null });
   const [activeSlide, setActiveSlide] = useState(0);
   const [heroQuery, setHeroQuery] = useState("");
@@ -229,31 +222,6 @@ export default function HomePage() {
   }, []);
 
 
-  // Fetch latest properties for vehicle and goods sections.
-  useEffect(() => {
-    if (primaryCategoryIds.vehicle === null && primaryCategoryIds.good === null) return;
-
-    if (primaryCategoryIds.vehicle !== null) {
-      propertiesApi
-        .search({ primary_category_id: primaryCategoryIds.vehicle, page_size: 4, sort: "newest" })
-        .then((r) => setVehicleProperties(r.items))
-        .catch(() => setVehicleProperties([]))
-        .finally(() => setVehicleLoading(false));
-    } else {
-      setVehicleLoading(false);
-    }
-
-    if (primaryCategoryIds.good !== null) {
-      propertiesApi
-        .search({ primary_category_id: primaryCategoryIds.good, page_size: 4, sort: "newest" })
-        .then((r) => setGoodProperties(r.items))
-        .catch(() => setGoodProperties([]))
-        .finally(() => setGoodLoading(false));
-    } else {
-      setGoodLoading(false);
-    }
-  }, [primaryCategoryIds]);
-
   // For each major section's carousel, pull one real, recent listing per
   // headline subtype so the slide shows an actual photo from real inventory
   // rather than a generic stock image.
@@ -288,35 +256,42 @@ export default function HomePage() {
         setCarouselSlides((prev) => ({ ...prev, [rentalTerm]: slides }));
       });
     });
-
-    const buildPrimarySlides = (highlights, setter) => {
-      Promise.all(
-        highlights.map((h) => {
-          const subtype = allSubtypes.find((s) => s.slug === h.slug);
-          if (!subtype) return Promise.resolve(null);
-          return propertiesApi
-            .search({ subtype_id: subtype.id, page_size: 1, sort: "newest" })
-            .then((r) => ({ highlight: h, subtype, property: r.items[0] || null }))
-            .catch(() => ({ highlight: h, subtype, property: null }));
-        }),
-      ).then((results) => {
-        const slides = results
-          .filter((r) => r && r.subtype)
-          .map((r) => ({
-            key: r.highlight.slug,
-            image: r.property?.primary_photo_url || PLACEHOLDER_PHOTO,
-            eyebrow: r.subtype.name,
-            title: r.highlight.label,
-            description: r.highlight.blurb,
-            href: `/search?primary_category_id=${r.subtype.primary_category_id}&subtype_id=${r.subtype.id}`,
-          }));
-        setter(slides);
-      });
-    };
-
-    buildPrimarySlides(VEHICLE_HIGHLIGHTS, setVehicleCarouselSlides);
-    buildPrimarySlides(GOOD_HIGHLIGHTS, setGoodCarouselSlides);
   }, [categories]);
+
+  // Fetch latest 4 properties per visible Vehicle/Good secondary category,
+  // each rendered as its own home page subsection.
+  useEffect(() => {
+    if (categories.length === 0) return;
+    if (primaryCategoryIds.vehicle === null && primaryCategoryIds.good === null) return;
+
+    const sectionCats = categories.filter(
+      (c) =>
+        (c.primary_category_id === primaryCategoryIds.vehicle ||
+          c.primary_category_id === primaryCategoryIds.good) &&
+        c.home_page_visibility,
+    );
+    if (sectionCats.length === 0) {
+      setCategorySectionLoading(false);
+      return;
+    }
+
+    Promise.all(
+      sectionCats.map((cat) =>
+        propertiesApi
+          .search({ category_id: cat.id, page_size: 4, sort: "newest" })
+          .then((r) => [cat.id, r.items])
+          .catch(() => [cat.id, []]),
+      ),
+    )
+      .then((results) => {
+        const next = {};
+        results.forEach(([id, items]) => {
+          next[id] = items;
+        });
+        setCategorySectionProperties(next);
+      })
+      .finally(() => setCategorySectionLoading(false));
+  }, [categories, primaryCategoryIds]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -350,6 +325,31 @@ export default function HomePage() {
   };
 
   const sectionByKey = (key) => RENTAL_SECTIONS.find((s) => s.key === key);
+
+  // One RentalTermSection per visible secondary category under a given
+  // primary category (Vehicle or Good) — admins control which categories
+  // appear here via each category's home_page_visibility flag.
+  const renderCategorySections = (primaryId) =>
+    categories
+      .filter((c) => c.primary_category_id === primaryId && c.home_page_visibility)
+      .map((cat) => {
+        const subtypes = cat.subtypes.map((sub) => ({
+          id: sub.id,
+          name: sub.name,
+          href: `/search?primary_category_id=${primaryId}&category_id=${cat.id}&subtype_id=${sub.id}`,
+        }));
+        return (
+          <RentalTermSection
+            key={cat.id}
+            title={cat.name}
+            description={`Browse ${cat.name.toLowerCase()} available to rent.`}
+            searchHref={`/search?primary_category_id=${primaryId}&category_id=${cat.id}`}
+            subtypes={subtypes}
+            properties={categorySectionProperties[cat.id] || []}
+            loading={categorySectionLoading}
+          />
+        );
+      });
 
   return (
     <>
@@ -419,47 +419,9 @@ export default function HomePage() {
       <Container className="home-listings">
         <FeaturedSection properties={featuredProperties} loading={featuredLoading} />
 
-        {(() => {
-          const vehicleChips = categories
-            .filter((c) => c.primary_category_id === primaryCategoryIds.vehicle)
-            .map((c) => ({
-              id: c.id,
-              name: c.name,
-              href: `/search?primary_category_id=${primaryCategoryIds.vehicle}&category_id=${c.id}`,
-            }));
-          return (
-            <RentalTypeSection
-              title="Vehicles"
-              description="Cars, motorcycles, vans, boats and heavy equipment for every need."
-              searchHref={primaryCategoryIds.vehicle ? `/search?primary_category_id=${primaryCategoryIds.vehicle}` : "/search"}
-              chips={vehicleChips}
-              carouselSlides={vehicleCarouselSlides}
-              properties={vehicleProperties}
-              loading={vehicleLoading}
-            />
-          );
-        })()}
+        {renderCategorySections(primaryCategoryIds.vehicle)}
 
-        {(() => {
-          const goodChips = categories
-            .filter((c) => c.primary_category_id === primaryCategoryIds.good)
-            .map((c) => ({
-              id: c.id,
-              name: c.name,
-              href: `/search?primary_category_id=${primaryCategoryIds.good}&category_id=${c.id}`,
-            }));
-          return (
-            <RentalTypeSection
-              title="Goods"
-              description="Electronics, tools, furniture, event gear and more — rent instead of buy."
-              searchHref={primaryCategoryIds.good ? `/search?primary_category_id=${primaryCategoryIds.good}` : "/search"}
-              chips={goodChips}
-              carouselSlides={goodCarouselSlides}
-              properties={goodProperties}
-              loading={goodLoading}
-            />
-          );
-        })()}
+        {renderCategorySections(primaryCategoryIds.good)}
 
         {MAJOR_SECTION_ORDER.map((key) => {
           const s = sectionByKey(key);

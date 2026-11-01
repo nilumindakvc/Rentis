@@ -1,0 +1,71 @@
+# Render Blueprint — three services:
+#   1. rentis-user    static site, serves frontend/dist/index.html  (public site)
+#   2. rentis-admin   static site, serves frontend/dist/admin.html  (admin console)
+#   3. rentis-backend docker web service, FastAPI backend
+#
+# The two static sites build from the same frontend/ project (Vite multi-page
+# build produces both index.html and admin.html in frontend/dist), each one
+# just rewrites unmatched routes to its own entry HTML file.
+#
+# If you rename a service below, or attach a custom domain, update the
+# matching URLs in the envVars of the other services to match.
+
+services:
+  - type: web
+    name: rentis-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_ENV
+        value: production
+      - key: CORS_ORIGINS
+        value: https://rentis-user.onrender.com,https://rentis-admin.onrender.com
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_BILLING_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PLATFORM_COUNTRY
+        value: US
+      - key: FRONTEND_BASE_URL
+        value: https://rentis-user.onrender.com
+
+  - type: static
+    name: rentis-user
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://rentis-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: static
+    name: rentis-admin
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://rentis-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /admin.html
