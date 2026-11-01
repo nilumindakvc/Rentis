@@ -14,6 +14,7 @@ services:
   - type: web
     name: rentis-backend
     runtime: docker
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
     envVars:
@@ -46,8 +47,9 @@ services:
       - key: FRONTEND_BASE_URL
         value: https://rentis-user.onrender.com
 
-  - type: static
+  - type: web
     name: rentis-user
+    runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
@@ -58,8 +60,9 @@ services:
         source: /*
         destination: /index.html
 
-  - type: static
+  - type: web
     name: rentis-admin
+    runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
