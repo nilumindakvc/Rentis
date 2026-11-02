@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import NavBar from './components/layout/NavBar'
 import Footer from './components/layout/Footer'
+import SystemBanner from './components/layout/SystemBanner'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import SearchPage from './pages/SearchPage'
@@ -18,6 +19,7 @@ import NotFoundPage from './pages/NotFoundPage'
 export default function App() {
   return (
     <>
+      <SystemBanner />
       <NavBar />
       <main className="pb-5" style={{ flex: 1 }}>
         <Routes>

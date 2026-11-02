@@ -8,6 +8,7 @@ from app.routers import (
     admin_partners,
     admin_plans,
     admin_properties,
+    admin_settings,
     admin_stats,
     admin_taxonomy,
     admin_users,
@@ -23,6 +24,7 @@ from app.routers import (
     plans,
     properties,
     reviews,
+    site_settings,
     subscriptions,
     taxonomy,
     uploads,
@@ -56,6 +58,7 @@ app.include_router(partners.router)
 app.include_router(plans.router)
 app.include_router(subscriptions.router)
 app.include_router(webhooks.router)
+app.include_router(site_settings.router)
 app.include_router(ws.router)
 app.include_router(admin_auth.router)
 app.include_router(admin_admins.router)
@@ -65,6 +68,7 @@ app.include_router(admin_partners.router)
 app.include_router(admin_plans.router)
 app.include_router(admin_stats.router)
 app.include_router(admin_taxonomy.router)
+app.include_router(admin_settings.router)
 
 
 @app.get("/health")

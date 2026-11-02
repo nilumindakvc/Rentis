@@ -128,6 +128,12 @@ export const adminPlansApi = {
   remove: (id) => adminClient.delete(`/admin/plans/${id}`).then((r) => r.data),
 };
 
+export const adminSettingsApi = {
+  getBanner: () => adminClient.get("/admin/settings/banner").then((r) => r.data),
+  updateBanner: (payload) =>
+    adminClient.put("/admin/settings/banner", payload).then((r) => r.data),
+};
+
 export const adminTaxonomyApi = {
   listPrimary: () =>
     adminClient.get("/admin/taxonomy/primary-categories").then((r) => r.data),

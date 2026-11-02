@@ -17,6 +17,7 @@ from app.models.review import Review
 from app.models.partner import Partner
 from app.models.plan import Plan
 from app.models.owner_subscription import OwnerSubscription
+from app.models.app_setting import AppSetting
 
 __all__ = [
     "User",
@@ -41,4 +42,5 @@ __all__ = [
     "Partner",
     "Plan",
     "OwnerSubscription",
+    "AppSetting",
 ]

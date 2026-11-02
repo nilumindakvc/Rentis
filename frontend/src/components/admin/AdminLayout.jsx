@@ -36,6 +36,9 @@ export default function AdminLayout({ children }) {
               <Nav.Link as={NavLink} to="/properties/archived">
                 Archived
               </Nav.Link>
+              <Nav.Link as={NavLink} to="/banner">
+                Banner
+              </Nav.Link>
               {admin?.role === 'super_admin' && (
                 <>
                   <Nav.Link as={NavLink} to="/admins">

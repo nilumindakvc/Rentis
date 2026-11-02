@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
+import AdminBannerPage from './pages/admin/AdminBannerPage'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import AdminPropertiesPage from './pages/admin/AdminPropertiesPage'
 import AdminArchivedPropertiesPage from './pages/admin/AdminArchivedPropertiesPage'
@@ -45,6 +46,14 @@ export default function App() {
         element={
           <AdminProtectedRoute>
             <AdminArchivedPropertiesPage />
+          </AdminProtectedRoute>
+        }
+      />
+      <Route
+        path="/banner"
+        element={
+          <AdminProtectedRoute>
+            <AdminBannerPage />
           </AdminProtectedRoute>
         }
       />

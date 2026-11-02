@@ -188,6 +188,10 @@ export const reviewsApi = {
     client.put(`/reviews/${id}`, payload).then((r) => r.data),
 };
 
+export const settingsApi = {
+  getBanner: () => client.get("/settings/banner").then((r) => r.data),
+};
+
 export const paymentsApi = {
   connectOnboard: (country) =>
     client.post("/payments/connect/onboard", { country }).then((r) => r.data),
